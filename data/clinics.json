@@ -1,0 +1,51 @@
+[
+  {
+    "id": "fhc-placeholder",
+    "name": "[Your family health center]",
+    "type": "Family health center",
+    "free": true,
+    "services": ["STI swab and blood tests", "Cervical screening (age 30-60)", "Contraception advice"],
+    "district": "[District]",
+    "address": "[Address]",
+    "hours": "[Hours]",
+    "phone": "[Phone]",
+    "privacy_checked": false
+  },
+  {
+    "id": "sti-clinic-placeholder",
+    "name": "[District STI clinic]",
+    "type": "Public STI clinic",
+    "free": true,
+    "services": ["STI testing and treatment", "No referral needed"],
+    "district": "[District]",
+    "address": "[Address]",
+    "hours": "[Hours]",
+    "phone": "[Phone]",
+    "privacy_checked": false
+  },
+  {
+    "id": "youth-room-placeholder",
+    "name": "[Adolescent-friendly health room]",
+    "type": "Youth-friendly service",
+    "free": true,
+    "services": ["Confidential advice for under-18s", "Contraception"],
+    "district": "[District]",
+    "address": "[Address]",
+    "hours": "[Hours]",
+    "phone": "[Phone]",
+    "privacy_checked": false
+  },
+  {
+    "id": "partner-placeholder",
+    "name": "[Partner clinic]",
+    "type": "Private gynecology clinic",
+    "free": false,
+    "price_note": "[Price range]",
+    "services": ["STI tests", "Gynecology exam", "Women doctors", "Evening hours"],
+    "district": "[District]",
+    "address": "[Address]",
+    "hours": "[Hours]",
+    "phone": "[Phone]",
+    "privacy_checked": false
+  }
+]

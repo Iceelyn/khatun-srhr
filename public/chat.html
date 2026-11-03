@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Naiz · Нууц чат</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <a class="brand" href="/">naiz</a>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="pill safe" data-t="anon">Нэргүй</span>
+      <button id="lang" type="button" aria-label="Switch language">EN</button>
+    </div>
+  </header>
+
+  <div class="card">
+    <h1 data-t="title">Юу ч асуугаарай, нууцаар</h1>
+    <p class="muted" data-t="intro">БЗДХ, сарын тэмдэг, жирэмслэлтээс хамгаалах, харилцаа. Хариулт бүрийг эмч хянадаг. Таны нэрийг асуухгүй.</p>
+    <div class="chips" id="chips"></div>
+    <p style="margin:14px 0 0"><a class="btn primary" href="/check" data-t="checkLink">Шинжилгээ өгөх хэрэгтэй юу? 2 минутын шалгалт</a></p>
+    <p class="muted" style="margin:10px 0 0">Туршиж байна уу? · Testing Naiz? <a href="/feedback" style="color:var(--rose);font-weight:700">Санал өгөх · Give feedback</a></p>
+  </div>
+
+  <div class="chat" id="chat" aria-live="polite"></div>
+</div>
+
+<form class="ask" id="ask">
+  <div class="inner">
+    <label for="q" class="sr-only" data-t="label">Таны асуулт</label>
+    <textarea id="q" rows="1" maxlength="1000" placeholder="Асуултаа бичнэ үү…"></textarea>
+    <button class="primary" type="submit" data-t="send">Илгээх</button>
+  </div>
+</form>
+
+<script>
+const T = {
+  mn: {
+    anon: 'Нэргүй', title: 'Юу ч асуугаарай, нууцаар',
+    intro: 'БЗДХ, сарын тэмдэг, жирэмслэлтээс хамгаалах, харилцаа. Хариулт бүрийг эмч хянадаг. Таны нэрийг асуухгүй.',
+    checkLink: 'Шинжилгээ өгөх хэрэгтэй юу? 2 минутын шалгалт', label: 'Таны асуулт', send: 'Илгээх',
+    placeholder: 'Асуултаа бичнэ үү…', helpful: 'Тустай байлаа', notHelpful: 'Тус болсонгүй', thanks: 'Баярлалаа!',
+    thinking: '…', error: 'Алдаа гарлаа. Дахин оролдоно уу.',
+    chips: ['Ялгадас минь хэвийн үү?', 'ХПВ гэж юу вэ?', 'Эцэг эх маань мэдэх үү?', 'Тэмбүү эдгэрдэг үү?'],
+  },
+  en: {
+    anon: 'Anonymous', title: 'Ask anything, privately',
+    intro: 'STIs, periods, contraception, relationships. Every answer is reviewed by doctors. We never ask your name.',
+    checkLink: 'Should I get checked? 2-minute check', label: 'Your question', send: 'Send',
+    placeholder: 'Type your question…', helpful: 'Helpful', notHelpful: 'Not helpful', thanks: 'Thank you!',
+    thinking: '…', error: 'Something went wrong. Please try again.',
+    chips: ['Is my discharge normal?', 'What is HPV?', 'Will my parents find out?', 'Can syphilis be cured?'],
+  },
+};
+let lang = 'mn';
+const chat = document.getElementById('chat');
+const q = document.getElementById('q');
+
+function render() {
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-t]').forEach((el) => { el.textContent = t[el.dataset.t]; });
+  q.placeholder = t.placeholder;
+  document.getElementById('lang').textContent = lang === 'mn' ? 'EN' : 'МН';
+  const chips = document.getElementById('chips');
+  chips.replaceChildren(...t.chips.map((c) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = c;
+    b.addEventListener('click', () => ask(c));
+    return b;
+  }));
+}
+
+function bubble(text, who) {
+  const d = document.createElement('div');
+  d.className = `msg ${who}`;
+  d.textContent = text;
+  chat.appendChild(d);
+  d.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  return d;
+}
+
+function feedback(bot, refs) {
+  const t = T[lang];
+  const row = document.createElement('div');
+  row.className = 'feedback';
+  for (const [label, helpful] of [[t.helpful, true], [t.notHelpful, false]]) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = label;
+    b.addEventListener('click', async () => {
+      await fetch('/api/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ helpful, refs }) });
+      row.replaceChildren(Object.assign(document.createElement('span'), { className: 'muted', textContent: t.thanks }));
+    });
+    row.appendChild(b);
+  }
+  bot.appendChild(row);
+}
+
+async function ask(text) {
+  const question = String(text).trim();
+  if (!question) return;
+  bubble(question, 'me');
+  q.value = '';
+  const bot = bubble(T[lang].thinking, 'bot');
+  try {
+    const res = await fetch('/api/ask', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q: question }) });
+    const data = await res.json();
+    bot.textContent = data.answer || data.error || T[lang].error;
+    if (data.answer && !data.flag) feedback(bot, data.refs || []);
+  } catch {
+    bot.textContent = T[lang].error;
+  }
+}
+
+document.getElementById('ask').addEventListener('submit', (e) => { e.preventDefault(); ask(q.value); });
+q.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(q.value); } });
+document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; render(); });
+render();
+</script>
+</body>
+</html>

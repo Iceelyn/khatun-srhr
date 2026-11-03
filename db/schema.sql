@@ -1,0 +1,64 @@
+-- Naiz database tables (Supabase / Postgres).
+-- Supabase dashboard > SQL Editor > paste this > Run.
+--
+-- Security: Row Level Security is ON and there are NO public policies, so the public
+-- "anon" key can't read or write anything. Only the Naiz server, using the
+-- service_role key (kept in SUPABASE_SERVICE_KEY, never in the browser), can.
+-- Testers can only ADD feedback through /api/tester-feedback; only the team
+-- (TEAM_TOKEN) can read, triage, export or delete it.
+
+create table if not exists tester_feedback (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  role text,              -- young_woman | health_worker | parent | other
+  age_group text,         -- 18-20 | 21-24 | 25-29 | 30+ | ''
+  platform text,          -- ios | android | windows | mac | linux | other (from the browser, coarse)
+  source text,
+  consent boolean not null default false,
+  task_chat text,         -- easy | hard | failed | skipped
+  task_check text,
+  task_clinic text,
+  rate_easy smallint check (rate_easy between 1 and 5),
+  rate_private smallint check (rate_private between 1 and 5),
+  rate_trust smallint check (rate_trust between 1 and 5),
+  rate_would_test smallint check (rate_would_test between 1 and 5),
+  liked text,
+  confusing text,
+  change text,
+  -- filled in by the team when triaging
+  category text default '', -- bug | usability | missing_feature | enhancement | positive | not_actionable
+  priority text default '', -- P0 | P1 | P2 | P3
+  moscow text default '',   -- must | should | could | wont
+  status text default 'new',-- new | planned | fixed | wont_fix
+  team_note text default ''
+);
+
+create table if not exists interviews (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  code text not null,     -- anonymous code like W01 / H01 / P01. Never a name.
+  grp text,               -- young_woman | health_worker | parent
+  method text,            -- in_person | phone | online
+  month text,             -- YYYY-MM only (no exact dates)
+  consent boolean not null default false,
+  key_points text,
+  quote text,
+  themes text
+);
+
+-- Anonymous usage counts: no message text, names or IDs.
+create table if not exists events (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  ev text,                -- question | check | feedback
+  ch text,                -- web | messenger
+  refs jsonb,             -- knowledge-base entry ids used
+  flag text,              -- red-flag type, if any
+  mode text,              -- llm | keyword | red_flag | no_match
+  level text,             -- check result level
+  helpful boolean
+);
+
+alter table tester_feedback enable row level security;
+alter table interviews enable row level security;
+alter table events enable row level security;
