@@ -9,11 +9,9 @@
 <body>
 <div class="wrap">
   <header class="bar">
-    <a class="brand" href="/">naiz</a>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span class="pill safe" id="anon"></span>
-      <button id="lang" type="button" aria-label="Switch language">EN</button>
-    </div>
+    <span class="pill safe left" id="anon"></span>
+    <a class="brand" href="/">Naiz</a>
+    <button id="lang" type="button" aria-label="Switch language">EN</button>
   </header>
   <main id="app"></main>
   <p class="muted" id="help" style="margin-top:20px"></p>
@@ -188,5 +186,6 @@ function render() {
 document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; render(); });
 render();
 </script>
+<script src="/nav.js"></script>
 </body>
 </html>

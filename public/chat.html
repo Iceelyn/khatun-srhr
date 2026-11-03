@@ -5,23 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Naiz · Нууц чат</title>
 <link rel="stylesheet" href="/styles.css">
+<script>
+// First visit: show the 3-step welcome. Stored only in this browser.
+try { if (!localStorage.getItem('naiz-onboarded') && !location.search.includes('skip')) location.replace('/welcome'); } catch {}
+</script>
 </head>
 <body>
 <div class="wrap">
   <header class="bar">
-    <a class="brand" href="/">naiz</a>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span class="pill safe" data-t="anon">Нэргүй</span>
-      <button id="lang" type="button" aria-label="Switch language">EN</button>
-    </div>
+    <span class="pill safe left" data-t="anon">Нэргүй</span>
+    <a class="brand" href="/">Naiz</a>
+    <button id="lang" type="button" aria-label="Switch language">EN</button>
   </header>
 
-  <div class="card">
+  <section class="card hero">
+    <span class="eyebrow" data-t="eyebrow">Эмч хянасан · Нууцлалтай</span>
     <h1 data-t="title">Юу ч асуугаарай, нууцаар</h1>
     <p class="muted" data-t="intro">БЗДХ, сарын тэмдэг, жирэмслэлтээс хамгаалах, харилцаа. Хариулт бүрийг эмч хянадаг. Таны нэрийг асуухгүй.</p>
     <div class="chips" id="chips"></div>
-    <p style="margin:14px 0 0"><a class="btn primary" href="/check" data-t="checkLink">Шинжилгээ өгөх хэрэгтэй юу? 2 минутын шалгалт</a></p>
-    <p class="muted" style="margin:10px 0 0">Туршиж байна уу? · Testing Naiz? <a href="/feedback" style="color:var(--rose);font-weight:700">Санал өгөх · Give feedback</a></p>
+  </section>
+
+  <div class="features">
+    <a class="feature" href="/check">
+      <span class="ico purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 12l2 2 4-4"/></svg></span>
+      <span data-t="fCheck">2 минутын шалгалт</span>
+    </a>
+    <a class="feature" href="/check#clinics">
+      <span class="ico blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><path d="M12 7v5M9.5 9.5h5"/></svg></span>
+      <span data-t="fClinics">Үнэгүй эмнэлэг</span>
+    </a>
+    <a class="feature" href="/feedback">
+      <span class="ico pink"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span>
+      <span data-t="fFeedback">Санал өгөх</span>
+    </a>
   </div>
 
   <div class="chat" id="chat" aria-live="polite"></div>
@@ -38,7 +54,8 @@
 <script>
 const T = {
   mn: {
-    anon: 'Нэргүй', title: 'Юу ч асуугаарай, нууцаар',
+    anon: 'Нэргүй', eyebrow: 'Эмч хянасан · Нууцлалтай', title: 'Юу ч асуугаарай, нууцаар',
+    fCheck: '2 минутын шалгалт', fClinics: 'Үнэгүй эмнэлэг', fFeedback: 'Санал өгөх',
     intro: 'БЗДХ, сарын тэмдэг, жирэмслэлтээс хамгаалах, харилцаа. Хариулт бүрийг эмч хянадаг. Таны нэрийг асуухгүй.',
     checkLink: 'Шинжилгээ өгөх хэрэгтэй юу? 2 минутын шалгалт', label: 'Таны асуулт', send: 'Илгээх',
     placeholder: 'Асуултаа бичнэ үү…', helpful: 'Тустай байлаа', notHelpful: 'Тус болсонгүй', thanks: 'Баярлалаа!',
@@ -46,7 +63,8 @@ const T = {
     chips: ['Ялгадас минь хэвийн үү?', 'ХПВ гэж юу вэ?', 'Эцэг эх маань мэдэх үү?', 'Тэмбүү эдгэрдэг үү?'],
   },
   en: {
-    anon: 'Anonymous', title: 'Ask anything, privately',
+    anon: 'Anonymous', eyebrow: 'Doctor-reviewed · Private', title: 'Ask anything, privately',
+    fCheck: '2-minute check', fClinics: 'Free clinics', fFeedback: 'Give feedback',
     intro: 'STIs, periods, contraception, relationships. Every answer is reviewed by doctors. We never ask your name.',
     checkLink: 'Should I get checked? 2-minute check', label: 'Your question', send: 'Send',
     placeholder: 'Type your question…', helpful: 'Helpful', notHelpful: 'Not helpful', thanks: 'Thank you!',
@@ -119,5 +137,6 @@ q.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e
 document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; render(); });
 render();
 </script>
+<script src="/nav.js"></script>
 </body>
 </html>

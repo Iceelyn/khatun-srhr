@@ -44,7 +44,8 @@ Reply + "Check" and "Clinics" buttons ──► check page (rules set by doctors
 - `src/survey.js` + `scripts/summarize-survey.js`: survey export to anonymous counts
 - `db/schema.sql`: database tables (Supabase / Postgres)
 - `knowledge-base/kb.csv` and `kb.xlsx`: Q&As, one row per answer
-- `public/`: web chat, check and feedback pages (Mongolian and English); team results page
+- `public/`: welcome (onboarding), web chat, check and feedback pages (Mongolian and English); team results page
+- `public/styles.css` + `public/nav.js`: shared design (soft lavender palette, rounded cards, flower bot avatar, bottom tab bar)
 - `eval/`: test questions for doctors to grade the AI's answers
 - `research/`: desk evidence, research protocol and findings
 
@@ -55,7 +56,7 @@ No external packages. Node.js 20+ only.
 ```bash
 cp .env.example .env    # add your keys (or leave the AI key empty)
 npm test                # 22 tests: knowledge base, safety, triage, Messenger, feedback, survey
-npm start               # http://localhost:3000 (chat), /check, /feedback, /results
+npm start               # http://localhost:3000 (chat; first visit shows /welcome), /check, /feedback, /results
 ```
 
 Without `ANTHROPIC_API_KEY` the bot runs in keyword mode, matching the closest knowledge-base entry and answering in English. With a key, the AI model answers in the user's language using only knowledge-base content.

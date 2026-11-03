@@ -60,7 +60,9 @@ const STATIC = {
   '/check': ['check.html', 'text/html; charset=utf-8'],
   '/feedback': ['feedback.html', 'text/html; charset=utf-8'],
   '/results': ['results.html', 'text/html; charset=utf-8'],
+  '/welcome': ['welcome.html', 'text/html; charset=utf-8'],
   '/styles.css': ['styles.css', 'text/css; charset=utf-8'],
+  '/nav.js': ['nav.js', 'text/javascript; charset=utf-8'],
 };
 
 function send(res, status, body, type = 'application/json; charset=utf-8') {

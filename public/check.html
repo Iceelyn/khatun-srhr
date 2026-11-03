@@ -9,14 +9,13 @@
 <body>
 <div class="wrap">
   <header class="bar">
-    <a class="brand" href="/">naiz</a>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span class="pill safe" id="anon"></span>
-      <button id="lang" type="button" aria-label="Switch language">EN</button>
-    </div>
+    <span class="pill safe left" id="anon"></span>
+    <a class="brand" href="/">Naiz</a>
+    <button id="lang" type="button" aria-label="Switch language">EN</button>
   </header>
 
-  <div class="card">
+  <div class="card hero">
+    <span class="eyebrow" id="eyebrow"></span>
     <h1 id="title"></h1>
     <p class="muted" id="subtitle"></p>
   </div>
@@ -30,7 +29,7 @@
 // Answers stay in this page and are sent once for the result. They are not stored on the server.
 const T = {
   mn: {
-    anon: 'Нэргүй', title: 'Шинжилгээ өгөх хэрэгтэй юу?',
+    anon: 'Нэргүй', eyebrow: 'Хариулт хадгалагдахгүй', title: 'Шинжилгээ өгөх хэрэгтэй юу?',
     subtitle: '2 минутын нууц шалгалт. Нэр шаардахгүй, хариултыг хадгалахгүй.',
     age: 'Таны нас', everSex: 'Та бэлгийн харьцаанд орж байсан уу?',
     yes: 'Тийм', no: 'Үгүй', notSure: 'Мэдэхгүй', prefer: 'Хэлэхийг хүсэхгүй байна',
@@ -67,7 +66,7 @@ const T = {
     clinicsTitle: 'Хаана шинжилгээ өгөх вэ', free: 'Үнэгүй', partner: 'Баталгаажсан түнш эмнэлэг', chat: 'Асуулт байна уу? Бидэнтэй чатлаарай',
   },
   en: {
-    anon: 'Anonymous', title: 'Should I get checked?',
+    anon: 'Anonymous', eyebrow: 'Nothing is saved', title: 'Should I get checked?',
     subtitle: "A 2-minute private check. No name needed, and your answers aren't saved.",
     age: 'Your age', everSex: 'Have you ever had sex?',
     yes: 'Yes', no: 'No', notSure: 'Not sure', prefer: "I'd rather not say",
@@ -133,7 +132,7 @@ function checkGroup(name, legend, options) {
 function renderForm() {
   const t = T[lang];
   document.documentElement.lang = lang;
-  for (const id of ['anon', 'title', 'subtitle']) document.getElementById(id).textContent = t[id];
+  for (const id of ['anon', 'eyebrow', 'title', 'subtitle']) document.getElementById(id).textContent = t[id];
   document.getElementById('lang').textContent = lang === 'mn' ? 'EN' : 'МН';
 
   const age = el('fieldset', {}, el('legend', { textContent: t.age }));
@@ -206,7 +205,7 @@ async function showClinics() {
       el('span', { className: `tag ${c.free ? 'free' : 'paid'}`, textContent: c.free ? t.free : t.partner }),
       el('p', { className: 'muted', textContent: `${c.services.join(' · ')}` }),
       el('p', { className: 'muted', textContent: `${c.address} · ${c.hours} · ${c.phone}` })));
-  document.getElementById('clinics').replaceChildren(el('h2', { id: 'clinics-title', textContent: t.clinicsTitle }), ...cards);
+  document.getElementById('clinics').replaceChildren(el('div', { className: 'section-title' }, el('h2', { id: 'clinics-title', textContent: t.clinicsTitle })), ...cards);
 }
 
 form.addEventListener('submit', async (e) => {
@@ -216,7 +215,14 @@ form.addEventListener('submit', async (e) => {
 });
 document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; renderForm(); document.getElementById('result').replaceChildren(); document.getElementById('clinics').replaceChildren(); });
 renderForm();
-if (location.hash === '#clinics') showClinics();
+async function openClinicsFromHash() {
+  if (location.hash !== '#clinics') return;
+  await showClinics();
+  document.getElementById('clinics').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.addEventListener('hashchange', openClinicsFromHash);
+openClinicsFromHash();
 </script>
+<script src="/nav.js"></script>
 </body>
 </html>
