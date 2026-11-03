@@ -31,8 +31,9 @@ const config = {
   statsToken: process.env.STATS_TOKEN || '',
   // Protects the team results page and its APIs. Falls back to STATS_TOKEN.
   teamToken: process.env.TEAM_TOKEN || process.env.STATS_TOKEN || '',
-  metricsPath: process.env.METRICS_PATH || join(ROOT, 'data', 'metrics.jsonl'),
-  dataDir: process.env.DATA_DIR || join(ROOT, 'data'),
+  // Vercel's file system is read-only except /tmp (and /tmp is wiped often): use Supabase there.
+  metricsPath: process.env.METRICS_PATH || join(process.env.VERCEL ? '/tmp/naiz' : join(ROOT, 'data'), 'metrics.jsonl'),
+  dataDir: process.env.DATA_DIR || (process.env.VERCEL ? '/tmp/naiz' : join(ROOT, 'data')),
   // Optional cloud database (recommended when hosted). Server-side key only.
   supabaseUrl: process.env.SUPABASE_URL || '',
   supabaseKey: process.env.SUPABASE_SERVICE_KEY || '',
@@ -130,7 +131,11 @@ function readSurveySummary() {
 }
 
 async function routeTeam(req, res, path) {
-  if (!config.teamToken) return send(res, 503, { error: 'Set TEAM_TOKEN on the server to use the results page.' });
+  if (!config.teamToken) {
+    return send(res, 503, {
+      error: 'The server has no TEAM_TOKEN. In your hosting settings add an environment variable named exactly TEAM_TOKEN (capital letters, underscore) whose value is your password, then redeploy.',
+    });
+  }
   if (!isTeam(req)) return send(res, 403, { error: 'Wrong team token.' });
 
   if (req.method === 'GET' && path === '/api/team/overview') {
@@ -228,7 +233,16 @@ async function route(req, res) {
     return send(res, 200, readFileSync(join(ROOT, 'public', file)), type);
   }
 
-  if (path === '/health') return send(res, 200, { ok: true, kb_entries: kb.length, ai: Boolean(config.llmKey) });
+  // Setup check: shows WHETHER things are configured, never their values.
+  if (path === '/health') {
+    return send(res, 200, {
+      ok: true,
+      kb_entries: kb.length,
+      ai: Boolean(config.llmKey),
+      team_token_set: Boolean(config.teamToken),
+      storage: feedbackDB.kind,
+    });
+  }
 
   // Messenger webhook verification
   if (req.method === 'GET' && path === '/webhook') {

@@ -84,6 +84,15 @@ By default data is saved to `data/*.jsonl` (ignored by Git). **Free hosting wipe
 
 The browser never talks to the database directly: testers can only insert through `/api/tester-feedback`, and reading or editing needs the team token. You can also browse the tables in Supabase's Table Editor.
 
+### Check your setup
+
+Open `https://<your-host>/health`. It shows whether things are set up, never the secret values:
+
+- `"team_token_set": true`: the server has `TEAM_TOKEN`, so `/results` will open.
+- `"storage": "supabase"`: tester feedback is kept in Supabase and survives restarts. `"file"` means it will be lost.
+
+Environment variable **names** must be exactly `TEAM_TOKEN`, `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`. Your password goes in the **value**. On Vercel, redeploy after changing variables.
+
 ### Team workflow (GitHub)
 
 - `main` always works. Make a branch for each change (`fix/clinic-link`), open a pull request, merge when `npm test` passes.
