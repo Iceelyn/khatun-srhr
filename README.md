@@ -8,6 +8,8 @@ Mongolia's cervical cancer death rate is among the highest in the region. About 
 
 The services exist. Naiz helps young women actually use them. Evidence and sources: [`research/01-desk-evidence.md`](research/01-desk-evidence.md).
 
+**Project page (English / Монгол):** `docs/index.html`, published with GitHub Pages at https://iceelyn.github.io/khatun-srhr/ once Pages is turned on. Results shown there come from [`docs/evidence.json`](docs/evidence.json); empty values are hidden.
+
 ## What it does
 
 1. **Anonymous chat** in Mongolian (Cyrillic or Latin letters) and English, on Facebook Messenger and the web. Answers come only from a knowledge base our doctors write and approve.
@@ -47,7 +49,10 @@ Reply + "Check" and "Clinics" buttons ──► check page (rules set by doctors
 - `public/`: welcome (onboarding), web chat, check and feedback pages (Mongolian and English); team results page
 - `public/styles.css` + `public/nav.js`: shared design (soft lavender palette, rounded cards, flower bot avatar, bottom tab bar)
 - `eval/`: test questions for doctors to grade the AI's answers
-- `research/`: desk evidence, research protocol and findings
+- `research/`: desk evidence, research protocol, internal QA and findings
+- `docs/`: bilingual project page for GitHub Pages; `evidence.json` holds the results it shows
+- `src/ratelimit.js`: per-endpoint rate limits (protects the AI budget)
+- `eval/routing.csv`: the expected answer for each of the 30 test questions, checked by `npm test`
 
 No external packages. Node.js 20+ only.
 
@@ -55,7 +60,7 @@ No external packages. Node.js 20+ only.
 
 ```bash
 cp .env.example .env    # add your keys (or leave the AI key empty)
-npm test                # 22 tests: knowledge base, safety, triage, Messenger, feedback, survey
+npm test                # 24 tests: knowledge base, all 30 eval questions, safety, triage, rate limits, Messenger, feedback, survey
 npm start               # http://localhost:3000 (chat; first visit shows /welcome), /check, /feedback, /results
 ```
 

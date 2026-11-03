@@ -13,6 +13,7 @@ import { triage } from './triage.js';
 import { createMessenger, verifySignature, parseEvents } from './messenger.js';
 import { createMetrics, summarizeEvents } from './metrics.js';
 import { createStore } from './store.js';
+import { createRateLimiter, rateLimits } from './ratelimit.js';
 import { toCSV } from './csv.js';
 import { analyzeFeedback } from './llm.js';
 import { validateTesterFeedback, validateTriage, validateInterview, summarizeFeedback, TASKS, RATINGS, TEXTS } from './feedback.js';
@@ -87,18 +88,12 @@ function readBody(req, limit = 100_000) {
   });
 }
 
-// Simple per-IP rate limit for the public web endpoints (protects the AI budget).
-const hits = new Map();
-function rateLimited(req, max = 30, windowMs = 10 * 60 * 1000) {
+// Per-IP rate limits, a separate counter per endpoint (protects the AI budget). See src/ratelimit.js.
+const limits = rateLimits();
+const limiter = createRateLimiter();
+function rateLimited(req, bucket) {
   const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress;
-  const now = Date.now();
-  const h = hits.get(ip);
-  if (!h || now > h.reset) {
-    hits.set(ip, { count: 1, reset: now + windowMs });
-    return false;
-  }
-  h.count++;
-  return h.count > max;
+  return limiter(ip, bucket, limits[bucket]);
 }
 
 // Team-only endpoints need the TEAM_TOKEN in an "x-team-token" header.
@@ -268,7 +263,7 @@ async function route(req, res) {
 
   // Web chat (used for user testing without Facebook app review)
   if (req.method === 'POST' && path === '/api/ask') {
-    if (rateLimited(req)) return send(res, 429, { error: 'Too many questions. Please wait a few minutes.' });
+    if (rateLimited(req, 'ask')) return send(res, 429, { error: 'Too many questions. Please wait a few minutes.' });
     const { q } = JSON.parse((await readBody(req)).toString('utf8') || '{}');
     if (!q || !String(q).trim()) return send(res, 400, { error: 'empty question' });
     const result = await answer(q);
@@ -284,7 +279,7 @@ async function route(req, res) {
 
   // Private check: answers are processed in memory and NOT stored; only the result level is counted.
   if (req.method === 'POST' && path === '/api/check') {
-    if (rateLimited(req, 60)) return send(res, 429, { error: 'Too many requests.' });
+    if (rateLimited(req, 'check')) return send(res, 429, { error: 'Too many requests.' });
     const answers = JSON.parse((await readBody(req)).toString('utf8') || '{}');
     const result = triage(answers);
     metrics.log({ ev: 'check', level: result.level });
@@ -303,7 +298,7 @@ async function route(req, res) {
 
   // Tester feedback form (anonymous, insert-only: testers can add but never read feedback)
   if (req.method === 'POST' && path === '/api/tester-feedback') {
-    if (rateLimited(req, 10)) return send(res, 429, { error: 'Too many submissions. Please wait a few minutes.' });
+    if (rateLimited(req, 'feedback')) return send(res, 429, { error: 'Too many submissions. Please wait a few minutes.' });
     const { row, error } = validateTesterFeedback(await readJSON(req, 20_000), req.headers['user-agent']);
     if (error) return send(res, 400, { error });
     await feedbackDB.insert(row);

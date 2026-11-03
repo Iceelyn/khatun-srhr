@@ -9,6 +9,7 @@ This folder holds the evidence for Naiz. Two rules:
 | --- | --- | --- |
 | `01-desk-evidence.md` | Published studies and official statistics, with links | Yes |
 | `02-protocol.md` | How we ran the survey, interviews, prototype test and doctor grading | Yes |
+| `04-internal-qa.md` | Team QA before user testing: answer routing, end-to-end flows, bugs found and fixed | Yes |
 | `03-findings.md` | Our results: counts, themes, short anonymous quotes, what we changed | Yes, once filled in with real data |
 | `survey-summary.md` / `.json` | Survey counts made by `npm run survey` (no written answers, no identity columns) | Yes, after checking |
 | `raw/` | Survey export, interview notes, tester lists, consent records | **Never** |

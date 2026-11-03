@@ -11,6 +11,8 @@ import { extractRefs } from '../src/llm.js';
 import { verifySignature, parseEvents } from '../src/messenger.js';
 import { createAnswerer } from '../src/answer.js';
 import { createHmac } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { createRateLimiter, rateLimits } from '../src/ratelimit.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const kb = loadKB(join(ROOT, 'knowledge-base', 'kb.csv'));
@@ -91,6 +93,9 @@ test('keyword fallback finds the right entry in English and Mongolian', () => {
   assert.equal(keywordMatch(kb, 'what is syphilis')?.id, 'syphilis');
   assert.equal(keywordMatch(kb, 'тэмбүү эдгэрдэг үү')?.id, 'syphilis');
   assert.equal(keywordMatch(kb, 'does the hpv vaccine cause infertility')?.id, 'hpv-vaccine-fertility');
+  // Regressions found in internal QA (research/04-internal-qa.md): keyword ties sent these to the wrong entry.
+  assert.equal(keywordMatch(kb, 'My boyfriend checks my phone and gets angry. Is that normal?')?.id, 'healthy-relationship');
+  assert.equal(keywordMatch(kb, 'ХПВ вакцин үргүйдэл үүсгэдэг үү?')?.id, 'hpv-vaccine-fertility');
 });
 
 test('answerer: red flag bypasses the model; unknown question gets a safe fallback', async () => {
@@ -119,4 +124,31 @@ test('Messenger: events are parsed and echoes ignored', () => {
     ] }],
   });
   assert.deepEqual(evs, [{ psid: '1', text: 'hi' }, { psid: '3', postback: 'GET_STARTED' }]);
+});
+
+test('rate limit: endpoints count separately, so chatting never blocks the feedback form', () => {
+  let t = 0;
+  const limited = createRateLimiter({ windowMs: 1000, now: () => t });
+  for (let i = 0; i < 50; i++) limited('1.2.3.4', 'ask', 60);
+  assert.equal(limited('1.2.3.4', 'feedback', 10), false);
+  for (let i = 0; i < 9; i++) limited('1.2.3.4', 'feedback', 10);
+  assert.equal(limited('1.2.3.4', 'feedback', 10), true);
+  assert.equal(limited('5.6.7.8', 'feedback', 10), false);
+  t = 2000;
+  assert.equal(limited('1.2.3.4', 'feedback', 10), false);
+  assert.equal(rateLimits({ RATE_LIMIT_FEEDBACK: '200' }).feedback, 200);
+  assert.equal(rateLimits({ RATE_LIMIT_FEEDBACK: 'x' }).feedback, 40);
+});
+
+test('eval routing: all 30 test questions reach the expected entry, red flag or safe no-answer', async () => {
+  // eval/routing.csv was written after internal QA (research/04-internal-qa.md). Keyword mode, no AI key.
+  const questions = new Map(parseCSV(readFileSync(join(ROOT, 'eval', 'questions.csv'), 'utf8')).map((q) => [q.id, q.question]));
+  const answer = createAnswerer({ kb, apiKey: '', model: 'none' });
+  const wrong = [];
+  for (const r of parseCSV(readFileSync(join(ROOT, 'eval', 'routing.csv'), 'utf8'))) {
+    const a = await answer(questions.get(r.id));
+    const got = a.mode === 'red_flag' ? `red_flag:${a.flag}` : a.mode === 'no_match' ? 'no_match' : a.refs[0];
+    if (got !== r.expected_route) wrong.push(`${r.id}: expected ${r.expected_route}, got ${got}`);
+  }
+  assert.deepEqual(wrong, []);
 });

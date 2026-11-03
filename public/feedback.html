@@ -175,8 +175,9 @@ function render() {
       sent = true;
       render();
       window.scrollTo(0, 0);
-    } catch {
-      msg.textContent = t.error;
+    } catch (err) {
+      // Show the server's reason (e.g. "wait a few minutes") so testers know what to do.
+      msg.textContent = err && err.message && !/^\d+$/.test(err.message) ? `${t.error} (${err.message})` : t.error;
       btn.disabled = false;
     }
   });

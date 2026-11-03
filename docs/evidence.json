@@ -1,0 +1,175 @@
+{
+  "_readme": "The project site (docs/index.html) reads this file. Only put REAL results here, copied from research/03-findings.md. Leave a value as null and that line is hidden on the site; nothing is ever shown as a placeholder. status: done | in_progress | planned.",
+  "updated": "2026-11-03",
+  "app_url": "",
+  "repo_url": "https://github.com/iceelyn/khatun-srhr",
+  "methods": [
+    {
+      "id": "desk",
+      "status": "done",
+      "en": "Desk research: 20+ published studies and official statistics on HPV, cervical screening, STIs and barriers to care in Mongolia",
+      "mn": "Баримт бичгийн судалгаа: ХПВ, умайн хүзүүний үзлэг, БЗДХ болон тусламж авахад саад болж буй хүчин зүйлсийн талаарх 20 гаруй судалгаа, албан ёсны статистик",
+      "link": "research/01-desk-evidence.md"
+    },
+    {
+      "id": "survey",
+      "status": "planned",
+      "n": null,
+      "en": "Anonymous online survey of young women aged 18–29",
+      "mn": "18–29 насны залуу эмэгтэйчүүдийн нэргүй онлайн судалгаа",
+      "link": "research/02-protocol.md"
+    },
+    {
+      "id": "interviews",
+      "status": "planned",
+      "n": null,
+      "en": "Semi-structured interviews with young women, health workers and parents",
+      "mn": "Залуу эмэгтэйчүүд, эрүүл мэндийн ажилтнууд, эцэг эхчүүдтэй хийсэн ярилцлага",
+      "link": "research/02-protocol.md"
+    },
+    {
+      "id": "usability",
+      "status": "planned",
+      "n": null,
+      "en": "Task-based usability test of the working prototype (3 core tasks, 1–5 ratings, comments triaged P0–P3)",
+      "mn": "Ажиллаж буй прототипийн хэрэглээний тест (3 үндсэн даалгавар, 1–5 үнэлгээ, санал бүрийг P0–P3 гэж ангилсан)",
+      "link": "research/03-findings.md"
+    },
+    {
+      "id": "doctor",
+      "status": "planned",
+      "n": null,
+      "en": "Doctor grading of AI answers for accuracy and safety (30 test questions in Mongolian Cyrillic, Latin-script Mongolian and English)",
+      "mn": "Хиймэл оюуны хариултын үнэн зөв, аюулгүй байдлыг эмч нар үнэлэх (монгол кирилл, латин, англи хэлээр 30 асуулт)",
+      "link": "eval/questions.csv"
+    },
+    {
+      "id": "qa",
+      "status": "done",
+      "en": "Internal QA: 30-question routing test, 30 end-to-end browser checks on 3 screen sizes, automated regression tests",
+      "mn": "Дотоод чанарын шалгалт: 30 асуултын чиглүүлэлтийн тест, 3 дэлгэцийн хэмжээнд 30 бүрэн урсгалын шалгалт, автомат регрессийн тест",
+      "link": "research/04-internal-qa.md"
+    }
+  ],
+  "metrics": [
+    {
+      "group": "qa",
+      "value": "30 / 30",
+      "en": "Test questions handled correctly after fixes (27 matched to the right answer, 2 crisis messages routed to the fixed emergency reply, 1 off-topic question declined); 27 / 30 before the fixes",
+      "mn": "Засварын дараа зөв боловсруулсан тест асуулт (27 нь зөв хариулттай таарсан, 2 яаралтай мессеж тогтмол яаралтай хариу руу, 1 сэдвээс гадуурх асуултаас татгалзсан); засварын өмнө 27 / 30"
+    },
+    {
+      "group": "qa",
+      "value": "2 / 2",
+      "en": "Crisis messages (self-harm, sexual assault) that bypassed the AI and got the fixed emergency reply",
+      "mn": "Хиймэл оюуныг алгасаж, тогтмол яаралтай хариу авсан хямралын мессеж (өөрийгөө гэмтээх, бэлгийн хүчирхийлэл)"
+    },
+    {
+      "group": "qa",
+      "value": "30 / 30",
+      "en": "End-to-end browser checks passing on 2 phone sizes and desktop (welcome, chat, language switch, check, clinics, feedback, team page)",
+      "mn": "2 утасны хэмжээ болон компьютер дээр амжилттай давсан бүрэн урсгалын шалгалт (угтах, чат, хэл солих, шалгалт, эмнэлэг, санал, багийн хуудас)"
+    },
+    {
+      "group": "qa",
+      "value": "1 P0 fixed",
+      "en": "Blocking bug found before user testing: the feedback form stopped working after a few chat questions, and for whole groups on one Wi-Fi",
+      "mn": "Хэрэглэгчийн тестээс өмнө илэрсэн хориглох алдаа: хэдэн асуулт асуусны дараа, мөн нэг Wi-Fi ашигласан бүлэгт санал илгээх маягт ажиллахгүй болдог байсан"
+    },
+    {
+      "group": "qa",
+      "value": "24",
+      "en": "Automated tests run on every change, including all 30 test questions",
+      "mn": "Өөрчлөлт бүр дээр ажилладаг автомат тест, үүнд 30 тест асуулт бүгд багтсан"
+    },
+    {
+      "group": "survey",
+      "value": null,
+      "en": "Never visited a gynecologist",
+      "mn": "Эмэгтэйчүүдийн эмчид хэзээ ч үзүүлж байгаагүй"
+    },
+    {
+      "group": "survey",
+      "value": null,
+      "en": "Had a health worry they didn't get checked",
+      "mn": "Шалгуулаагүй эрүүл мэндийн санаа зовнил байсан"
+    },
+    {
+      "group": "survey",
+      "value": null,
+      "en": "Top reason for not going",
+      "mn": "Эмнэлэгт очоогүй гол шалтгаан"
+    },
+    {
+      "group": "survey",
+      "value": null,
+      "en": "Would use an anonymous, doctor-reviewed chat (4–5 of 5)",
+      "mn": "Эмчийн хянасан нэргүй чатыг ашиглана (5-аас 4–5)"
+    },
+    {
+      "group": "usability",
+      "value": null,
+      "en": "Found it easy to use (4–5 of 5)",
+      "mn": "Хэрэглэхэд хялбар (5-аас 4–5)"
+    },
+    {
+      "group": "usability",
+      "value": null,
+      "en": "Felt private (4–5 of 5)",
+      "mn": "Нууцлалтай санагдсан (5-аас 4–5)"
+    },
+    {
+      "group": "usability",
+      "value": null,
+      "en": "Trusted the answers (4–5 of 5)",
+      "mn": "Хариултад итгэсэн (5-аас 4–5)"
+    },
+    {
+      "group": "usability",
+      "value": null,
+      "en": "More likely to get tested after using it (4–5 of 5)",
+      "mn": "Ашигласны дараа шинжилгээ өгөх магадлал нэмэгдсэн (5-аас 4–5)"
+    },
+    {
+      "group": "usability",
+      "value": null,
+      "en": "Completed all 3 core tasks",
+      "mn": "3 үндсэн даалгаврыг бүгдийг гүйцэтгэсэн"
+    },
+    {
+      "group": "doctor",
+      "value": null,
+      "en": "AI answers rated accurate by both doctors",
+      "mn": "Хоёр эмч хоёулаа үнэн зөв гэж үнэлсэн хариулт"
+    },
+    {
+      "group": "doctor",
+      "value": null,
+      "en": "AI answers rated safe by both doctors",
+      "mn": "Хоёр эмч хоёулаа аюулгүй гэж үнэлсэн хариулт"
+    }
+  ],
+  "quotes": [],
+  "iterations": [
+    {
+      "version": "v0.1",
+      "date": "2026-10",
+      "en": "First working prototype: anonymous chat grounded in a doctor-written knowledge base, 2-minute private check, clinic finder (free services first), safety layer, tester feedback form and team results page.",
+      "mn": "Анхны ажиллагаатай прототип: эмчийн бичсэн мэдлэгийн санд суурилсан нэргүй чат, 2 минутын нууц шалгалт, эмнэлэг хайгч (үнэгүй үйлчилгээг эхэнд), аюулгүй байдлын давхарга, тестерийн санал хүсэлтийн маягт, багийн үр дүнгийн хуудас."
+    },
+    {
+      "version": "v0.2",
+      "date": "2026-11",
+      "en": "Mobile-first redesign: 3-step onboarding that explains privacy before anything else, bottom tab bar so the check and clinic list are one tap away, MN/EN switch on every page.",
+      "mn": "Гар утсанд зориулсан шинэ дизайн: нууцлалыг эхэнд нь тайлбарлах 3 алхамт танилцуулга, шалгалт болон эмнэлгийн жагсаалт руу нэг товшилтоор очих доод цэс, хуудас бүрт МН/EN сонголт."
+    },
+    {
+      "version": "v0.3",
+      "date": "2026-11",
+      "en": "Internal QA before user testing. Fixed a P0: all endpoints shared one rate-limit counter, so the feedback form failed after a few chat questions and for whole groups on shared Wi-Fi. Fixed 3 of 30 test questions routed to the wrong answer (for example, a controlling-relationship question got the discharge answer). Added regression tests and a /health setup check. Logged 2 P1s to fix before testing: Mongolian answers without the AI model, and real clinic details.",
+      "mn": "Хэрэглэгчийн тестийн өмнөх дотоод шалгалт. P0 засав: бүх хүсэлт нэг хязгаарлалтын тоолуур хуваалцдаг байсан тул хэдэн асуулт асуусны дараа, мөн нэг Wi-Fi ашигласан бүлэгт санал илгээх маягт ажиллахгүй болдог байв. 30 тест асуултын буруу хариулт руу очсон 3-ыг засав (хяналттай харилцааны тухай асуултад ялгадасны хариулт очдог байв). Регрессийн тест болон /health тохиргооны шалгалт нэмэв. Тестээс өмнө засах 2 P1 бүртгэв: хиймэл оюунгүй үед монгол хариулт, эмнэлгийн бодит мэдээлэл."
+    }
+  ],
+  "team": [],
+  "partners": []
+}
