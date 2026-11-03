@@ -35,6 +35,9 @@ function fileStore(path) {
 
   return {
     kind: 'file',
+    async ping() {
+      return { ok: true };
+    },
     async insert(row) {
       const full = { id: randomUUID(), created_at: new Date().toISOString(), ...row };
       appendFileSync(path, JSON.stringify(full) + '\n');
@@ -71,6 +74,15 @@ function supabaseStore(table, base, key) {
   };
   return {
     kind: 'supabase',
+    // Cheap connection test for /health: reads one id. Never returns the key.
+    async ping() {
+      try {
+        await call(`${url}?select=id&limit=1`, { method: 'GET' });
+        return { ok: true };
+      } catch (err) {
+        return { ok: false, hint: explainSupabaseError(err.message) };
+      }
+    },
     async insert(row) {
       const out = await call(url, { method: 'POST', headers: { prefer: 'return=representation' }, body: JSON.stringify(row) });
       return out?.[0] ?? row;
@@ -91,4 +103,16 @@ function supabaseStore(table, base, key) {
       return true;
     },
   };
+}
+
+// Turns a Supabase error into a plain fix the team can act on.
+export function explainSupabaseError(message = '') {
+  const m = String(message);
+  if (/42P01|does not exist|PGRST205|schema cache/i.test(m))
+    return 'The database tables are missing. In Supabase open SQL Editor, paste db/schema.sql and click Run.';
+  if (/\b401\b|\b403\b|Invalid API key|JWT|permission denied/i.test(m))
+    return 'Supabase rejected the key. Set SUPABASE_SERVICE_KEY to the service_role key (Project Settings > API Keys > Legacy API keys), not the anon key, then redeploy.';
+  if (/fetch failed|ENOTFOUND|getaddrinfo|Invalid URL/i.test(m))
+    return 'The server could not reach Supabase. Check SUPABASE_URL looks like https://xxxx.supabase.co (no extra path), then redeploy.';
+  return 'Database error. Check SUPABASE_URL and SUPABASE_SERVICE_KEY, and that db/schema.sql was run.';
 }

@@ -12,7 +12,7 @@ import { createAnswerer } from './answer.js';
 import { triage } from './triage.js';
 import { createMessenger, verifySignature, parseEvents } from './messenger.js';
 import { createMetrics, summarizeEvents } from './metrics.js';
-import { createStore } from './store.js';
+import { createStore, explainSupabaseError } from './store.js';
 import { createRateLimiter, rateLimits } from './ratelimit.js';
 import { toCSV } from './csv.js';
 import { analyzeFeedback } from './llm.js';
@@ -236,6 +236,7 @@ async function route(req, res) {
       ai: Boolean(config.llmKey),
       team_token_set: Boolean(config.teamToken),
       storage: feedbackDB.kind,
+      storage_ok: (await feedbackDB.ping()).ok,
     });
   }
 
@@ -305,7 +306,16 @@ async function route(req, res) {
     return send(res, 200, { ok: true });
   }
 
-  if (path.startsWith('/api/team/')) return routeTeam(req, res, path);
+  if (path.startsWith('/api/team/')) {
+    try {
+      return await routeTeam(req, res, path);
+    } catch (err) {
+      // Only the team reaches this (token checked first), so give them the reason and the fix.
+      console.error('team API failed:', err.message);
+      const hint = feedbackDB.kind === 'supabase' ? explainSupabaseError(err.message) : 'Server error. Check the server logs.';
+      return send(res, 500, { error: hint });
+    }
+  }
 
   return send(res, 404, { error: 'not found' });
 }

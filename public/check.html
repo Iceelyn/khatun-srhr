@@ -63,7 +63,7 @@ const T = {
     assaultMsg: 'Таны буруу биш. Аль болох хурдан эмнэлэгт эсвэл Нэг цэгийн үйлчилгээний төвд хандаарай. 72 цагийн дотор хандвал жирэмслэлт болон ХДХВ-ээс урьдчилан сэргийлэх боломжтой. Аюулд байгаа бол 102.',
     youth: '18-аас доош настай бол Өсвөр үеийнхэнд ээлтэй кабинетад үнэгүй, нууцлалтай зөвлөгөө авах боломжтой.',
     disclaimer: 'Энэ бол онош биш. Зөвхөн шинжилгээ л баттай хариу өгнө.',
-    clinicsTitle: 'Хаана шинжилгээ өгөх вэ', free: 'Үнэгүй', partner: 'Баталгаажсан түнш эмнэлэг', chat: 'Асуулт байна уу? Бидэнтэй чатлаарай',
+    clinicsTitle: 'Хаана шинжилгээ өгөх вэ', website: 'Вэбсайт', callFirst: 'Очихоосоо өмнө утсаар цаг, үнээ лавлаарай. Үнэгүй төрийн үйлчилгээ эхэнд, дараа нь хувийн эмнэлгүүд.', free: 'Үнэгүй', partner: 'Хувийн эмнэлэг (төлбөртэй)', chat: 'Асуулт байна уу? Бидэнтэй чатлаарай',
   },
   en: {
     anon: 'Anonymous', eyebrow: 'Nothing is saved', title: 'Should I get checked?',
@@ -100,7 +100,7 @@ const T = {
     assaultMsg: "This is not your fault. Please go to a hospital or a One-Stop Service Center as soon as you can. Within 72 hours, doctors can help prevent pregnancy and HIV. If you're in danger, call 102.",
     youth: "If you're under 18, adolescent-friendly health rooms give free, confidential advice.",
     disclaimer: "This isn't a diagnosis. Only a test can tell.",
-    clinicsTitle: 'Where to get tested', free: 'Free', partner: 'Verified partner clinic', chat: 'Questions? Chat with us',
+    clinicsTitle: 'Where to get tested', website: 'Website', callFirst: 'Call before you go to check hours and prices. Free public services first, then private clinics.', free: 'Free', partner: 'Private clinic (paid)', chat: 'Questions? Chat with us',
   },
 };
 
@@ -108,7 +108,7 @@ let lang = 'mn';
 const form = document.getElementById('form');
 const el = (tag, props = {}, ...kids) => {
   const n = Object.assign(document.createElement(tag), props);
-  n.append(...kids);
+  n.append(...kids.filter((k) => k != null));
   return n;
 };
 
@@ -203,9 +203,10 @@ async function showClinics() {
     el('div', { className: 'card' },
       el('h2', { textContent: c.name }),
       el('span', { className: `tag ${c.free ? 'free' : 'paid'}`, textContent: c.free ? t.free : t.partner }),
-      el('p', { className: 'muted', textContent: `${c.services.join(' · ')}` }),
-      el('p', { className: 'muted', textContent: `${c.address} · ${c.hours} · ${c.phone}` })));
-  document.getElementById('clinics').replaceChildren(el('div', { className: 'section-title' }, el('h2', { id: 'clinics-title', textContent: t.clinicsTitle })), ...cards);
+      el('p', { className: 'muted', textContent: c.services.join(' · ') }),
+      el('p', { className: 'muted', textContent: [c.address, c.hours, c.phone].filter(Boolean).join(' · ') }),
+      c.website ? el('p', { className: 'muted' }, el('a', { href: c.website, target: '_blank', rel: 'noopener', className: 'link', textContent: t.website })) : null));
+  document.getElementById('clinics').replaceChildren(el('div', { className: 'section-title' }, el('h2', { id: 'clinics-title', textContent: t.clinicsTitle })), el('p', { className: 'muted', textContent: t.callFirst }), ...cards);
 }
 
 form.addEventListener('submit', async (e) => {

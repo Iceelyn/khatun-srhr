@@ -60,13 +60,14 @@ Triaged with the same rules as tester feedback: P0 blocks the core journey, P1 i
 | Feedback form fails with "Something went wrong" after a tester has used the chat and check. All endpoints shared one rate-limit counter per IP (feedback limit 10 per 10 min), so a few chat questions used it up. Testers on the same Wi-Fi share an IP, so in a group session feedback stops for everyone within minutes. | Bug | **P0** | Must | **Fixed.** Separate counter per endpoint (`src/ratelimit.js`), limits raised and configurable (`RATE_LIMIT_ASK`, `RATE_LIMIT_FEEDBACK`), form shows the server's reason. Regression test added. |
 | Controlling-relationship question answered with the discharge entry; 2 other misroutes | Bug | P1 | Must | **Fixed.** Keywords; routing test for all 30 questions. |
 | Without an AI key, Mongolian questions get English answers, because knowledge-base answers are English only so far | Missing feature | P1 | Must | **Open.** Before testing in Mongolian: set `ANTHROPIC_API_KEY` on the server (answers in the user's language), and the team writes Mongolian answers in `kb.xlsx` (roadmap). |
-| Clinic list shows placeholders ("[Your family health center]") | Missing feature | P1 | Must | **Open.** The team adds real, verified free clinics to `data/clinics.json` before the first test session. |
+| Clinic list shows placeholders ("[Your family health center]") | Missing feature | P1 | Must | **Partly fixed.** Real entries from official sources: ХӨСҮТ (NCCD) first, then family health centers and adolescent-friendly rooms (free), then 2 private clinics. Paid clinics were wrongly labelled "Verified partner clinic"; now "Private clinic (paid)". Still to do: the team phones each clinic to confirm details, then fills in `verified_on`. |
 | Team page said "Set TEAM_TOKEN" without saying how; deployers named the variable wrongly | Usability | P2 | Should | **Fixed.** Clearer message; `/health` shows whether the token and database are set. |
+| On the live server, the team page showed only "Could not load: server error" after a correct password, so the team couldn't see why | Usability | P1 | Must | **Fixed.** Database errors now explain the cause and the fix (e.g. "tables are missing: run db/schema.sql"); `/health` shows `storage_ok`. |
 | Hidden test inputs can sit under the bottom tab bar while scrolling | Usability | P3 | Could | Checked: visible labels are never covered after scrolling. No change. |
 
 ## 4. Before the first user test session
 
 - [ ] Set `ANTHROPIC_API_KEY`, `TEAM_TOKEN`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` on the host; `/health` shows `"ai": true, "team_token_set": true, "storage": "supabase"`
-- [ ] Replace placeholder clinics with real, verified ones
+- [ ] Phone each clinic in `data/clinics.json` to confirm address, phone, hours and that STI tests are available; fill in `verified_on`
 - [ ] Run the 3 tester tasks on an iPhone (Safari) and an Android phone (Chrome)
 - [ ] For an in-person group test on one Wi-Fi: set `RATE_LIMIT_FEEDBACK=200` and `RATE_LIMIT_ASK=300` for the day

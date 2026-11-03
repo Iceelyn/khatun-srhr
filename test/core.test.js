@@ -152,3 +152,10 @@ test('eval routing: all 30 test questions reach the expected entry, red flag or 
   }
   assert.deepEqual(wrong, []);
 });
+
+test('store: Supabase errors become plain fixes for the team', async () => {
+  const { explainSupabaseError } = await import('../src/store.js');
+  assert.match(explainSupabaseError('Supabase tester_feedback GET failed: 404 {"code":"PGRST205","message":"Could not find the table"}'), /schema\.sql/);
+  assert.match(explainSupabaseError('Supabase events GET failed: 401 {"message":"Invalid API key"}'), /service_role/);
+  assert.match(explainSupabaseError('fetch failed'), /SUPABASE_URL/);
+});
