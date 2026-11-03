@@ -91,3 +91,6 @@ create table if not exists survey_responses (
 alter table survey_responses enable row level security;
 grant select, insert, update, delete on table survey_responses to service_role;
 revoke all on table survey_responses from anon, authenticated;
+
+-- Tell the Supabase API to notice new tables straight away.
+notify pgrst, 'reload schema';

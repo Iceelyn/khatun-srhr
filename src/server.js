@@ -256,6 +256,7 @@ async function route(req, res) {
       team_token_set: Boolean(config.teamToken),
       storage: feedbackDB.kind,
       storage_ok: (await feedbackDB.ping()).ok,
+      survey_ok: (await surveyDB.ping()).ok,
     });
   }
 
@@ -323,7 +324,13 @@ async function route(req, res) {
     if (rateLimited(req, 'survey')) return send(res, 429, { error: 'Too many submissions. Please wait a few minutes.' });
     const { row, error } = validateSurvey(await readJSON(req, 20_000));
     if (error) return send(res, 400, { error });
-    await surveyDB.insert(row);
+    try {
+      await surveyDB.insert(row);
+    } catch (err) {
+      // Usually the survey_responses table hasn't been created yet (run db/schema.sql).
+      console.error('survey insert failed:', err.message, '|', explainSupabaseError(err.message));
+      return send(res, 503, { error: 'The survey is not ready yet. Please try again later. · Судалгаа түр ажиллахгүй байна, дараа дахин оролдоно уу.' });
+    }
     return send(res, 200, { ok: true });
   }
 
