@@ -168,6 +168,12 @@
       "date": "2026-11",
       "en": "Internal QA before user testing. Fixed a P0: all endpoints shared one rate-limit counter, so the feedback form failed after a few chat questions and for whole groups on shared Wi-Fi. Fixed 3 of 30 test questions routed to the wrong answer (for example, a controlling-relationship question got the discharge answer). Added regression tests and a /health setup check. Logged 2 P1s to fix before testing: Mongolian answers without the AI model, and real clinic details.",
       "mn": "Хэрэглэгчийн тестийн өмнөх дотоод шалгалт. P0 засав: бүх хүсэлт нэг хязгаарлалтын тоолуур хуваалцдаг байсан тул хэдэн асуулт асуусны дараа, мөн нэг Wi-Fi ашигласан бүлэгт санал илгээх маягт ажиллахгүй болдог байв. 30 тест асуултын буруу хариулт руу очсон 3-ыг засав (хяналттай харилцааны тухай асуултад ялгадасны хариулт очдог байв). Регрессийн тест болон /health тохиргооны шалгалт нэмэв. Тестээс өмнө засах 2 P1 бүртгэв: хиймэл оюунгүй үед монгол хариулт, эмнэлгийн бодит мэдээлэл."
+    },
+    {
+      "version": "v0.4",
+      "date": "2026-11",
+      "en": "Built-in anonymous survey saved to the database. Check result moved to its own screen with numbered next steps. Home page redesigned around our main goal, the 2-minute check: it is now the first and largest action, every chat answer ends with a link to it, and it is highlighted in the tab bar. The chat got a clear 'Naiz AI' identity. Clinic list filled with real public services (ХӨСҮТ first) and private clinics.",
+      "mn": "Өгөгдлийн санд хадгалагддаг нэргүй судалгаа нэмэв. Шалгалтын үр дүнг дугаарласан дараагийн алхамтай тусдаа дэлгэц болгов. Нүүр хуудсыг гол зорилго болох 2 минутын шалгалтад төвлөрүүлэн шинэчлэв: хамгийн эхэнд, хамгийн том товч болж, чатын хариулт бүрийн төгсгөлд шалгалт руу холбоос гарч, доод цэсэнд онцлогдсон. Чатад 'Naiz AI' туслахын тодорхой дүр өгөв. Эмнэлгийн жагсаалтад төрийн үйлчилгээ (ХӨСҮТ эхэнд) болон хувийн эмнэлгүүдийг нэмэв."
     }
   ],
   "team": [],

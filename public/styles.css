@@ -115,6 +115,33 @@ input[type='number'] { font: inherit; width: 120px; min-height: 44px; border: 1.
 .tag.free { background: var(--blue-soft); color: var(--blue); }
 .tag.paid { background: var(--pink-soft); color: var(--pink-ink); }
 
+/* ---- home: check is the primary action ---- */
+.check-cta h1 { font-size: 26px; }
+.trust { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 18px; padding: 0; }
+.trust li { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.18); font-size: 13px; font-weight: 800; }
+.trust svg { width: 16px; height: 16px; }
+.card.hero .btn.primary.cta-btn { display: flex; width: 100%; min-height: 54px; font-size: 17px; border-radius: 16px; animation: nudge-pulse 2.4s ease-in-out infinite; }
+@keyframes nudge-pulse { 0%, 100% { box-shadow: 0 8px 20px rgba(31, 29, 43, 0.18), 0 0 0 0 rgba(255, 255, 255, 0.6); } 50% { box-shadow: 0 8px 20px rgba(31, 29, 43, 0.18), 0 0 0 8px rgba(255, 255, 255, 0); } }
+.features.two { grid-template-columns: 1fr 1fr; }
+.features.two .feature { flex-direction: row; justify-content: center; padding: 12px; }
+.features.two .ico { width: 32px; height: 32px; border-radius: 10px; }
+
+/* ---- home: AI assistant ---- */
+.assistant { background: var(--card); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow); }
+.assistant-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.assistant-head h2 { margin: 0; font-size: 17px; display: flex; align-items: center; gap: 6px; }
+.assistant-head p { margin: 0; font-size: 13px; }
+.bot-avatar { flex-shrink: 0; width: 46px; height: 46px; border-radius: 15px; background: var(--primary-soft); display: grid; place-items: center; position: relative; }
+.bot-avatar .bot-ico { width: 32px; height: 32px; }
+.bot-avatar::after { content: ''; position: absolute; right: -2px; bottom: -2px; width: 12px; height: 12px; border-radius: 50%; background: #22c55e; border: 2px solid var(--card); }
+.ai-badge { font-size: 10px; font-weight: 800; letter-spacing: .5px; padding: 2px 7px; border-radius: 999px; background: linear-gradient(135deg, #8f84f8, #ff8fc4); color: #fff; }
+.msg.bot.greet { margin: 0 0 12px 44px; max-width: calc(100% - 44px); background: var(--bg); box-shadow: none; }
+.assistant .chips { margin-left: 44px; flex-wrap: wrap; overflow: visible; }
+.assistant .chips button { max-width: 100%; flex-shrink: 1; white-space: normal; text-align: left; min-height: 40px; padding: 8px 14px; font-size: 13px; }
+.nudge { align-self: stretch; margin-left: 44px; padding: 14px 16px; border-radius: 18px; background: var(--primary-soft); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.nudge p { margin: 0; flex: 1 1 200px; font-size: 14px; font-weight: 700; color: var(--primary-dark); }
+.nudge .btn { min-height: 40px; padding: 8px 16px; }
+
 /* ---- check: result screen ---- */
 .stepper { display: flex; align-items: center; gap: 8px; margin: 4px 0 12px; font-size: 13px; font-weight: 800; }
 .stepper span:not(.line) { padding: 5px 12px; border-radius: 999px; }
@@ -133,7 +160,7 @@ button.back { min-height: 36px; padding: 4px 0; font-size: 14px; color: var(--pr
 .next-step p { padding-left: 0; }
 
 /* ---- chat ---- */
-.chat { display: flex; flex-direction: column; gap: 12px; min-height: 40vh; padding-bottom: 96px; }
+.chat { display: flex; flex-direction: column; gap: 12px; padding-bottom: 110px; }
 .msg { max-width: 85%; padding: 12px 15px; border-radius: 20px; white-space: pre-wrap; font-size: 15px; }
 .msg.me { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 6px; box-shadow: 0 6px 16px rgba(123, 108, 246, 0.25); }
 .msg.bot {
@@ -153,7 +180,14 @@ form.ask {
 }
 body.has-nav form.ask { bottom: calc(var(--nav-h) + 8px + env(safe-area-inset-bottom)); padding-bottom: 8px; }
 form.ask .inner { max-width: 560px; margin: 0 auto; display: flex; gap: 8px; align-items: flex-end; }
-form.ask textarea { flex: 1; font: inherit; border: 0; border-radius: 22px; padding: 11px 16px; resize: none; min-height: 44px; background: var(--card); box-shadow: var(--shadow-sm); }
+form.ask .ask-field { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--card); border-radius: 24px; padding: 4px 6px 4px 6px; box-shadow: 0 4px 16px rgba(91, 75, 224, 0.14); border: 1.5px solid var(--primary-tint); }
+form.ask .ask-field:focus-within { border-color: var(--primary); }
+form.ask .ask-bot { flex-shrink: 0; width: 34px; height: 34px; border-radius: 12px; background: var(--primary-soft); display: grid; place-items: center; }
+form.ask .ask-bot .bot-ico { width: 24px; height: 24px; }
+form.ask textarea { flex: 1; font: inherit; border: 0; border-radius: 18px; padding: 8px 4px; resize: none; min-height: 36px; background: transparent; }
+form.ask textarea:focus-visible { outline: none; }
+form.ask button.send { width: 48px; min-width: 48px; height: 48px; padding: 0; border-radius: 50%; }
+form.ask button.send svg { width: 22px; height: 22px; }
 form.ask button.primary { border-radius: 22px; }
 .chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; margin: 0 -2px; scrollbar-width: none; }
 .chips::-webkit-scrollbar { display: none; }
@@ -189,6 +223,8 @@ nav.tabbar a {
 }
 nav.tabbar a svg { width: 22px; height: 22px; }
 nav.tabbar a[aria-current='page'] { color: var(--primary); }
+nav.tabbar a.cta { color: var(--primary-dark); }
+nav.tabbar a.cta svg { width: 40px; height: 40px; padding: 9px; margin-top: -18px; border-radius: 50%; background: var(--primary); color: #fff; box-shadow: 0 6px 16px rgba(123, 108, 246, 0.45); border: 3px solid var(--card); }
 nav.tabbar a[aria-current='page'] svg { filter: drop-shadow(0 3px 6px rgba(123, 108, 246, 0.35)); }
 
 /* ---- onboarding ---- */

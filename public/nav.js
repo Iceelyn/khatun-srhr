@@ -15,6 +15,7 @@
     a.href = t.href;
     const here = location.pathname === '/check' && location.hash === '#clinics' ? t.href === '/check#clinics' : t.match.includes(location.pathname);
     if (here) a.setAttribute('aria-current', 'page');
+    if (t.href === '/check') a.className = 'cta'; // our main goal: get people to the check
     a.innerHTML = `${t.icon}<span></span>`;
     // Same-page hash link: the check page listens for hashchange to open the clinic list.
     nav.appendChild(a);
