@@ -12,8 +12,22 @@ import { dirname } from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 export function createStore({ table, path, supabaseUrl, supabaseKey }) {
-  if (supabaseUrl && supabaseKey) return supabaseStore(table, supabaseUrl.replace(/\/$/, ''), supabaseKey);
+  if (supabaseUrl && supabaseKey) return supabaseStore(table, normalizeSupabaseUrl(supabaseUrl), cleanKey(supabaseKey));
   return fileStore(path);
+}
+
+// Common copy-paste mistakes: spaces or quotes around the value, a trailing slash, the REST path
+// (https://x.supabase.co/rest/v1/) or the dashboard address (supabase.com/dashboard/project/x).
+export function normalizeSupabaseUrl(raw) {
+  let u = String(raw).trim().replace(/^['"]|['"]$/g, '').trim();
+  const dash = u.match(/supabase\.com\/dashboard\/project\/([a-z0-9]+)/i);
+  if (dash) return `https://${dash[1]}.supabase.co`;
+  if (!/^https?:\/\//i.test(u)) u = `https://${u}`;
+  return u.replace(/\/+$/, '').replace(/\/rest\/v1$/i, '').replace(/\/+$/, '');
+}
+
+export function cleanKey(raw) {
+  return String(raw).trim().replace(/^['"]|['"]$/g, '').replace(/^Bearer\s+/i, '').replace(/\s+/g, '');
 }
 
 function fileStore(path) {
@@ -108,11 +122,19 @@ function supabaseStore(table, base, key) {
 // Turns a Supabase error into a plain fix the team can act on.
 export function explainSupabaseError(message = '') {
   const m = String(message);
-  if (/42P01|does not exist|PGRST205|schema cache/i.test(m))
+  if (/42P01|does not exist|PGRST205|schema cache|Could not find the table/i.test(m))
     return 'The database tables are missing. In Supabase open SQL Editor, paste db/schema.sql and click Run.';
-  if (/\b401\b|\b403\b|Invalid API key|JWT|permission denied/i.test(m))
-    return 'Supabase rejected the key. Set SUPABASE_SERVICE_KEY to the service_role key (Project Settings > API Keys > Legacy API keys), not the anon key, then redeploy.';
-  if (/fetch failed|ENOTFOUND|getaddrinfo|Invalid URL/i.test(m))
-    return 'The server could not reach Supabase. Check SUPABASE_URL looks like https://xxxx.supabase.co (no extra path), then redeploy.';
+  if (/42501|permission denied/i.test(m))
+    return 'The tables exist but the server is not allowed to use them. Run db/schema.sql again in the Supabase SQL Editor (it now includes the GRANT lines), and make sure SUPABASE_SERVICE_KEY is the service_role key.';
+  if (/\b401\b|\b403\b|Invalid API key|JWT|No API key|Unregistered API key/i.test(m))
+    return 'Supabase rejected the key. Set SUPABASE_SERVICE_KEY to the service_role key (Project Settings > API Keys > Legacy API keys), not the anon or publishable key, then redeploy.';
+  if (/PGRST125|Invalid path|<!doctype|<html|\b404\b/i.test(m))
+    return 'SUPABASE_URL points to the wrong address. Use the Project URL only, like https://abcdefgh.supabase.co (Project Settings > Data API), then redeploy.';
+  if (/PGRST106|schema must be one of/i.test(m))
+    return 'The "public" schema is not exposed. In Supabase: Project Settings > Data API > Exposed schemas: add public.';
+  if (/fetch failed|ENOTFOUND|getaddrinfo|Invalid URL|ECONNREFUSED|certificate/i.test(m))
+    return 'The server could not reach Supabase. Check SUPABASE_URL looks like https://xxxx.supabase.co, and that the Supabase project is not paused, then redeploy.';
+  if (/header|ByteString|character/i.test(m))
+    return 'SUPABASE_SERVICE_KEY contains invalid characters. Paste the key again with nothing before or after it, then redeploy.';
   return 'Database error. Check SUPABASE_URL and SUPABASE_SERVICE_KEY, and that db/schema.sql was run.';
 }

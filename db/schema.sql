@@ -62,3 +62,10 @@ create table if not exists events (
 alter table tester_feedback enable row level security;
 alter table interviews enable row level security;
 alter table events enable row level security;
+
+-- Let the server (service_role key) use the tables. Newer Supabase projects don't always
+-- grant this automatically to tables made in the SQL Editor. Safe to run more than once.
+grant usage on schema public to service_role;
+grant select, insert, update, delete on table tester_feedback, interviews, events to service_role;
+-- The public anon/authenticated roles get nothing: RLS is on and there are no policies.
+revoke all on table tester_feedback, interviews, events from anon, authenticated;

@@ -159,3 +159,13 @@ test('store: Supabase errors become plain fixes for the team', async () => {
   assert.match(explainSupabaseError('Supabase events GET failed: 401 {"message":"Invalid API key"}'), /service_role/);
   assert.match(explainSupabaseError('fetch failed'), /SUPABASE_URL/);
 });
+
+test('store: common SUPABASE_URL and key copy-paste mistakes are cleaned up', async () => {
+  const { normalizeSupabaseUrl, cleanKey, explainSupabaseError } = await import('../src/store.js');
+  for (const raw of ['https://abcd.supabase.co', ' https://abcd.supabase.co/ ', 'https://abcd.supabase.co/rest/v1/', '"https://abcd.supabase.co"', 'abcd.supabase.co', 'https://supabase.com/dashboard/project/abcd/settings/api'])
+    assert.equal(normalizeSupabaseUrl(raw), 'https://abcd.supabase.co', raw);
+  assert.equal(cleanKey(' "eyJhb.c d"\n'), 'eyJhb.cd');
+  assert.equal(cleanKey('Bearer eyJ'), 'eyJ');
+  assert.match(explainSupabaseError('Supabase events GET failed: 403 {"code":"42501","message":"permission denied for table events"}'), /GRANT/);
+  assert.match(explainSupabaseError('Supabase events GET failed: 404 {"code":"PGRST125","message":"Invalid path specified in request URL"}'), /Project URL/);
+});

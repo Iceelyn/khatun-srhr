@@ -313,7 +313,10 @@ async function route(req, res) {
       // Only the team reaches this (token checked first), so give them the reason and the fix.
       console.error('team API failed:', err.message);
       const hint = feedbackDB.kind === 'supabase' ? explainSupabaseError(err.message) : 'Server error. Check the server logs.';
-      return send(res, 500, { error: hint });
+      // The raw reason helps the team fix setup. Secrets are removed; the key is never in it.
+      let detail = String(err.message || '').slice(0, 400);
+      for (const secret of [config.supabaseKey, config.teamToken, config.llmKey]) if (secret) detail = detail.split(secret).join('***');
+      return send(res, 500, { error: hint, detail });
     }
   }
 
