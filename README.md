@@ -74,6 +74,7 @@ Any Node host works (Render, Railway, Fly.io or a VPS). Set the environment vari
 
 | Page | Who | What |
 | --- | --- | --- |
+| `/survey` | Anyone 18+ | Anonymous 3-minute problem-validation survey (MN/EN). Answers go straight to Supabase and show live on /results > Survey. |
 | `/feedback` | Testers | Anonymous form: 3 tasks, four 1–5 ratings, three comments, 18+ consent. Phone numbers, emails and links typed by mistake are removed before saving. Testers can add feedback but never read it. |
 | `/results` | Team only (`TEAM_TOKEN`) | Overview (ratings, task success, usage, findings table to copy), tester feedback triage, interview tracker, survey summary, AI feedback analyzer, CSV export. |
 
@@ -84,7 +85,7 @@ How to run a test round, log interviews, summarise the survey and what may be pu
 By default data is saved to `data/*.jsonl` (ignored by Git). **Free hosting wipes these files on restart**, so for a hosted test:
 
 1. Create a free project at supabase.com.
-2. SQL Editor: paste and run [`db/schema.sql`](db/schema.sql). It creates `tester_feedback`, `interviews` and `events` with Row Level Security on and no public access.
+2. SQL Editor: paste and run [`db/schema.sql`](db/schema.sql). It creates `tester_feedback`, `interviews`, `events` and `survey_responses` with Row Level Security on and no public access. Safe to run again after updates.
 3. Project Settings > API: set `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` (service_role key) on the server only. Restart.
 
 The browser never talks to the database directly: testers can only insert through `/api/tester-feedback`, and reading or editing needs the team token. You can also browse the tables in Supabase's Table Editor.

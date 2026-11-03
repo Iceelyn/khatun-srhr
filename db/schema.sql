@@ -69,3 +69,25 @@ grant usage on schema public to service_role;
 grant select, insert, update, delete on table tester_feedback, interviews, events to service_role;
 -- The public anon/authenticated roles get nothing: RLS is on and there are no policies.
 revoke all on table tester_feedback, interviews, events from anon, authenticated;
+
+-- Problem-validation survey answers from /survey (research/02-protocol.md, section A).
+-- Anonymous: no name, email or phone. Tick-all answers are stored as JSON lists.
+create table if not exists survey_responses (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  lang text,              -- mn | en
+  age_group text,         -- 18-20 | 21-24 | 25-29
+  location text,          -- ulaanbaatar | aimag_center | soum | other
+  gyn_visits text,        -- never | once | more
+  last_gyn text,          -- within_1y | 1_3y | over_3y | never
+  unchecked_worry text,   -- yes | no | prefer_not
+  barriers jsonb default '[]'::jsonb,
+  info_sources jsonb default '[]'::jsonb,
+  info_trust text,        -- 1-5
+  heard_hpv text,         -- yes | no | not_sure
+  would_use_chat text,    -- 1-5
+  what_would_help text    -- scrubbed of emails, phone numbers and links
+);
+alter table survey_responses enable row level security;
+grant select, insert, update, delete on table survey_responses to service_role;
+revoke all on table survey_responses from anon, authenticated;

@@ -14,6 +14,7 @@ import { createMessenger, verifySignature, parseEvents } from './messenger.js';
 import { createMetrics, summarizeEvents } from './metrics.js';
 import { createStore, explainSupabaseError } from './store.js';
 import { createRateLimiter, rateLimits } from './ratelimit.js';
+import { SURVEY_QUESTIONS, SURVEY_COLUMNS, validateSurvey, summarizeSurveyResponses, surveyRowForCSV } from './survey-form.js';
 import { toCSV } from './csv.js';
 import { analyzeFeedback } from './llm.js';
 import { validateTesterFeedback, validateTriage, validateInterview, summarizeFeedback, TASKS, RATINGS, TEXTS } from './feedback.js';
@@ -50,6 +51,7 @@ const db = (table, file) => createStore({ table, path: join(config.dataDir, file
 const events = createStore({ table: 'events', path: config.metricsPath, supabaseUrl: config.supabaseUrl, supabaseKey: config.supabaseKey });
 const feedbackDB = db('tester_feedback', 'feedback.jsonl');
 const interviewDB = db('interviews', 'interviews.jsonl');
+const surveyDB = db('survey_responses', 'survey.jsonl');
 const metrics = createMetrics(events);
 if (events.kind === 'file') console.warn('Storage: local files in data/. On free hosting these are wiped on restart; set SUPABASE_URL and SUPABASE_SERVICE_KEY to keep tester feedback.');
 const messenger = config.pageToken ? createMessenger(config) : null;
@@ -61,6 +63,7 @@ const STATIC = {
   '/chat': ['chat.html', 'text/html; charset=utf-8'],
   '/check': ['check.html', 'text/html; charset=utf-8'],
   '/feedback': ['feedback.html', 'text/html; charset=utf-8'],
+  '/survey': ['survey.html', 'text/html; charset=utf-8'],
   '/results': ['results.html', 'text/html; charset=utf-8'],
   '/welcome': ['welcome.html', 'text/html; charset=utf-8'],
   '/styles.css': ['styles.css', 'text/css; charset=utf-8'],
@@ -115,6 +118,20 @@ async function readJSON(req, limit) {
 const FEEDBACK_COLUMNS = ['id', 'created_at', 'role', 'age_group', 'platform', ...TASKS, ...RATINGS, ...TEXTS, 'category', 'priority', 'moscow', 'status', 'team_note'];
 const INTERVIEW_COLUMNS = ['id', 'created_at', 'code', 'grp', 'method', 'month', 'key_points', 'quote', 'themes'];
 
+// Live survey results from the database; falls back to an imported Google Forms summary.
+// A missing survey table must not break the rest of the results page.
+async function surveySummary() {
+  try {
+    const rows = await surveyDB.list();
+    if (rows.length) return { survey: summarizeSurveyResponses(rows), survey_live: true };
+    return { survey: readSurveySummary(), survey_live: true };
+  } catch (err) {
+    console.error('survey read failed:', err.message);
+    const hint = surveyDB.kind === 'supabase' ? explainSupabaseError(err.message) : 'Could not read survey answers.';
+    return { survey: readSurveySummary(), survey_live: false, survey_error: hint };
+  }
+}
+
 function readSurveySummary() {
   const p = join(ROOT, 'research', 'survey-summary.json');
   if (!existsSync(p)) return null;
@@ -139,7 +156,7 @@ async function routeTeam(req, res, path) {
       feedback: summarizeFeedback(fb),
       interviews: { n: iv.length, by_group: iv.reduce((o, r) => ((o[r.grp] = (o[r.grp] || 0) + 1), o), {}) },
       usage: summarizeEvents(ev, kb),
-      survey: readSurveySummary(),
+      ...(await surveySummary()),
       storage: feedbackDB.kind,
       ai: Boolean(config.llmKey),
     });
@@ -162,10 +179,12 @@ async function routeTeam(req, res, path) {
     }
   }
 
-  const csv = path.match(/^\/api\/team\/export\/(feedback|interviews)\.csv$/);
+  const csv = path.match(/^\/api\/team\/export\/(feedback|interviews|survey)\.csv$/);
   if (req.method === 'GET' && csv) {
-    const rows = await (csv[1] === 'feedback' ? feedbackDB : interviewDB).list();
-    const cols = csv[1] === 'feedback' ? FEEDBACK_COLUMNS : INTERVIEW_COLUMNS;
+    const store = { feedback: feedbackDB, interviews: interviewDB, survey: surveyDB }[csv[1]];
+    let rows = await store.list();
+    if (csv[1] === 'survey') rows = rows.map(surveyRowForCSV);
+    const cols = { feedback: FEEDBACK_COLUMNS, interviews: INTERVIEW_COLUMNS, survey: SURVEY_COLUMNS }[csv[1]];
     res.writeHead(200, {
       'content-type': 'text/csv; charset=utf-8',
       'content-disposition': `attachment; filename="naiz-${csv[1]}-${new Date().toISOString().slice(0, 10)}.csv"`,
@@ -298,6 +317,16 @@ async function route(req, res) {
   }
 
   // Tester feedback form (anonymous, insert-only: testers can add but never read feedback)
+  if (req.method === 'GET' && path === '/api/survey/questions') return send(res, 200, SURVEY_QUESTIONS);
+
+  if (req.method === 'POST' && path === '/api/survey') {
+    if (rateLimited(req, 'survey')) return send(res, 429, { error: 'Too many submissions. Please wait a few minutes.' });
+    const { row, error } = validateSurvey(await readJSON(req, 20_000));
+    if (error) return send(res, 400, { error });
+    await surveyDB.insert(row);
+    return send(res, 200, { ok: true });
+  }
+
   if (req.method === 'POST' && path === '/api/tester-feedback') {
     if (rateLimited(req, 'feedback')) return send(res, 429, { error: 'Too many submissions. Please wait a few minutes.' });
     const { row, error } = validateTesterFeedback(await readJSON(req, 20_000), req.headers['user-agent']);

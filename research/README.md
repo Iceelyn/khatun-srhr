@@ -17,7 +17,7 @@ This folder holds the evidence for Naiz. Two rules:
 ## The research loop
 
 ```
-Survey (Google Form) ──► npm run survey ──► survey-summary.md ─┐
+Survey (/survey page) ──► Supabase ──► /results Survey tab ──┐
 Interviews ──► log on /results (Interviews tab) ───────────────┤
 Prototype test ──► testers fill /feedback ──► triage on /results ├──► 03-findings.md ──► application
 Chat + check usage ──► anonymous counts on /results ───────────┘
@@ -25,16 +25,15 @@ Chat + check usage ──► anonymous counts on /results ───────�
 
 ## 1. Online survey
 
-1. Make the Google Form from `02-protocol.md` (section A). Settings: **don't collect email addresses**, put the consent line at the top, make the first question "I am 18 or older" (yes/no, required).
-2. After closing it: Responses > Download responses (.csv). Save as `research/raw/survey.csv`.
-3. Run:
-   ```bash
-   npm run survey -- research/raw/survey.csv
-   ```
-   This writes `research/survey-summary.md` and `research/survey-summary.json` and shows them on the results page (Survey tab). Timestamp, email, name and phone columns are dropped. Written answers are counted but never copied.
-4. Read the summary. If a multiple-choice question shows up as "written answers", that's because the sample is small; count it by hand.
-5. Theme the written answers by hand (sticky notes or a sheet in `raw/`). Pick 1–2 short quotes with no identifying details.
-6. Copy the key numbers into `03-findings.md`, section 1.
+The survey is built into Naiz at **`/survey`** (questions from `02-protocol.md`, section A). Answers go straight into the `survey_responses` table in Supabase, so there's nothing to download or upload.
+
+1. Run the latest `db/schema.sql` in the Supabase SQL Editor once (it creates `survey_responses`). It's safe to run again.
+2. Share `https://<your-host>/survey` (Mongolian) or `https://<your-host>/survey?lang=en` in university groups and young women's Facebook groups. It's anonymous, asks no name, email or phone, and only accepts people who confirm they are 18+.
+3. Watch results live on **/results > Survey**. "Export survey CSV" downloads every answer, including the written ones.
+4. Theme the written answers ("What would make you more likely to get a check-up?") by hand. Phone numbers, emails and links are removed automatically. Pick 1–2 short quotes with no identifying details.
+5. Copy the key numbers into `03-findings.md`, section 1.
+
+Already ran a Google Form? `npm run survey -- research/raw/survey.csv` still works: it writes `research/survey-summary.json`, which the Survey tab shows until the first `/survey` answer arrives.
 
 ## 2. Interviews
 

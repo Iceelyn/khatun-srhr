@@ -28,5 +28,6 @@ export function rateLimits(env = process.env) {
     ask: n(env.RATE_LIMIT_ASK, 60),
     check: n(env.RATE_LIMIT_CHECK, 120),
     feedback: n(env.RATE_LIMIT_FEEDBACK, 40),
+    survey: n(env.RATE_LIMIT_SURVEY, 40),
   };
 }

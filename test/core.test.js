@@ -169,3 +169,28 @@ test('store: common SUPABASE_URL and key copy-paste mistakes are cleaned up', as
   assert.match(explainSupabaseError('Supabase events GET failed: 403 {"code":"42501","message":"permission denied for table events"}'), /GRANT/);
   assert.match(explainSupabaseError('Supabase events GET failed: 404 {"code":"PGRST125","message":"Invalid path specified in request URL"}'), /Project URL/);
 });
+
+test('survey: validates, drops unknown values, scrubs text, and summarises', async () => {
+  const { validateSurvey, summarizeSurveyResponses } = await import('../src/survey-form.js');
+  assert.match(validateSurvey({ age_group: '21-24' }).error, /18/);
+  assert.match(validateSurvey({ consent: true }).error, /How old/);
+  const { row } = validateSurvey({
+    consent: true, age_group: '21-24', location: 'mars', unchecked_worry: 'yes',
+    barriers: ['ashamed', 'cost', 'hacked'], info_sources: ['facebook'], would_use_chat: '5',
+    what_would_help: 'Call me on 9911 2233 or a@b.mn', name: 'Bat',
+  });
+  assert.equal(row.location, '');
+  assert.deepEqual(row.barriers, ['ashamed', 'cost']);
+  assert.equal(row.name, undefined);
+  assert.doesNotMatch(row.what_would_help, /9911|a@b/);
+  // Follow-up only counts when its condition is met
+  assert.deepEqual(validateSurvey({ consent: true, age_group: '18-20', unchecked_worry: 'no', barriers: ['cost'] }).row.barriers, []);
+  const s = summarizeSurveyResponses([row, { ...row, would_use_chat: '3', barriers: [] }]);
+  assert.equal(s.respondents, 2);
+  const use = s.questions.find((q) => q.id === 'would_use_chat');
+  assert.equal(use.mean, 4);
+  assert.equal(use.top2_pct, 50);
+  const bar = s.questions.find((q) => q.id === 'barriers');
+  assert.equal(bar.answered, 1);
+  assert.equal(bar.options.find((o) => o.option === 'Cost').pct, 100);
+});

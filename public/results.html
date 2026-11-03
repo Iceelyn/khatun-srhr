@@ -158,7 +158,7 @@ function render() {
     : null;
   app.replaceChildren(
     el('div', { className: 'toolbar' }, el('h1', {}, 'Team results'), el('button', { type: 'button', onclick: start }, 'Refresh')),
-    warn, nav, body);
+    ...[warn, nav, body].filter(Boolean));
 }
 
 function viewOverview() {
@@ -328,22 +328,31 @@ function viewInterviews() {
 }
 
 function viewSurvey() {
-  const s = data.overview.survey;
-  if (!s) return el('div', { className: 'card' },
-    el('h2', {}, 'No survey summary yet'),
-    el('ol', {},
-      el('li', {}, 'Google Forms > Responses > Download responses (.csv).'),
-      el('li', {}, 'Save it as research/raw/survey.csv (this folder is never committed).'),
-      el('li', {}, 'Run: npm run survey -- research/raw/survey.csv'),
-      el('li', {}, 'Restart the server (or redeploy) and refresh this page.')));
+  const o = data.overview;
+  const s = o.survey;
+  const link = `${location.origin}/survey`;
+  const copyBtn = el('button', { type: 'button', className: 'small', onclick: async () => {
+    try { await navigator.clipboard.writeText(link); copyBtn.textContent = 'Copied'; } catch { copyBtn.textContent = link; }
+  } }, 'Copy link');
+  const share = el('div', { className: 'card' },
+    el('h2', {}, 'Share the survey'),
+    el('p', { className: 'muted' }, 'Anonymous, 3 minutes, Mongolian by default (English: add ?lang=en). Answers are saved straight to the database and appear here. Share it in university groups and young women\'s Facebook groups.'),
+    el('p', {}, el('a', { href: '/survey', target: '_blank', className: 'link' }, link)),
+    el('div', { className: 'filters' }, copyBtn,
+      el('button', { type: 'button', className: 'small', onclick: () => download('survey') }, 'Export survey CSV')));
+  const problem = o.survey_live === false
+    ? el('p', { className: 'alert today' }, 'Survey answers can\'t be read from the database: ' + (o.survey_error || '') + ' (Run the latest db/schema.sql in the Supabase SQL Editor: it adds the survey_responses table.)')
+    : null;
+  if (!s || !s.respondents) return el('div', {}, problem, share, el('div', { className: 'card' }, el('h2', {}, 'No survey answers yet'), empty('Share the link above. Results appear here as soon as the first answer arrives.')));
   return el('div', {},
-    el('p', { className: 'muted' }, `${s.respondents} responses. Written answers are counted, not shown.`),
+    problem, share,
+    el('p', { className: 'muted' }, `${s.respondents} responses${s.source === 'naiz_survey' ? ' (live from the database)' : ' (imported summary)'}. Written answers are counted here; read them in the CSV export and theme them by hand.`),
     s.respondents < 30 ? el('p', { className: 'alert soon' }, `Small sample (n = ${s.respondents}): report as an early signal.`) : null,
     s.questions.map((q, i) => el('section', { className: 'card' },
       el('h2', {}, `${i + 1}. ${q.question}`),
-      el('p', { className: 'muted' }, `Answered by ${q.answered} of ${s.respondents}` + (q.type === 'multi' ? ' · tick-all question, adds up to more than 100%' : '') + (q.type === 'scale' ? ` · average ${q.mean}/5, ${q.top2_pct}% chose 4–5` : '')),
-      q.type === 'open' ? empty(`${q.answered} written answers: theme them by hand in the Interviews tab or findings.`) :
-        bars(q.options.map((o) => ({ label: o.option, pct: o.pct, value: `${o.count} (${o.pct}%)` }))))));
+      el('p', { className: 'muted' }, `Answered by ${q.answered} of ${s.respondents}` + (q.type === 'multi' ? ' · tick-all question, adds up to more than 100%' : '') + (q.type === 'scale' && q.mean != null ? ` · average ${q.mean}/5, ${q.top2_pct}% chose 4–5` : '')),
+      q.type === 'open' ? empty(`${q.answered} written answers: see the CSV export.`) :
+        bars(q.options.map((x) => ({ label: x.option, pct: x.pct || 0, value: `${x.count} (${x.pct ?? 0}%)` }))))));
 }
 
 function viewAnalyze() {
