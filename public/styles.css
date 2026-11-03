@@ -115,6 +115,23 @@ input[type='number'] { font: inherit; width: 120px; min-height: 44px; border: 1.
 .tag.free { background: var(--blue-soft); color: var(--blue); }
 .tag.paid { background: var(--pink-soft); color: var(--pink-ink); }
 
+/* ---- check: result screen ---- */
+.stepper { display: flex; align-items: center; gap: 8px; margin: 4px 0 12px; font-size: 13px; font-weight: 800; }
+.stepper span:not(.line) { padding: 5px 12px; border-radius: 999px; }
+.stepper .done { background: var(--primary-soft); color: var(--primary-dark); }
+.stepper .current { background: var(--primary); color: #fff; }
+.stepper .line { flex: 0 0 24px; height: 2px; background: var(--primary-tint); }
+button.back { min-height: 36px; padding: 4px 0; font-size: 14px; color: var(--primary-dark); }
+#result-title { margin: 6px 0 14px; }
+#result-title:focus { outline: none; }
+.alert.big { padding: 20px; border: 2px solid currentColor; }
+.alert.big h2 { font-size: 20px; }
+.next-step { display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: start; padding: 16px 18px; }
+.next-step .num { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: #fff; font-weight: 800; }
+.next-step h3 { margin: 4px 0 6px; font-size: 16px; }
+.next-step ul, .next-step p { margin: 0; padding-left: 18px; }
+.next-step p { padding-left: 0; }
+
 /* ---- chat ---- */
 .chat { display: flex; flex-direction: column; gap: 12px; min-height: 40vh; padding-bottom: 96px; }
 .msg { max-width: 85%; padding: 12px 15px; border-radius: 20px; white-space: pre-wrap; font-size: 15px; }
