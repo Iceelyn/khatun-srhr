@@ -213,3 +213,31 @@ test('survey: validates, drops unknown values, scrubs text, and summarises', asy
   assert.equal(s.questions.find((q) => q.id === 'barriers').options.find((o) => o.option === 'Cost').pct, 100);
   assert.equal(s.questions.find((q) => q.id === 'sti_known').options.find((o) => o.option === 'Chlamydia').count, 0);
 });
+
+test('store: a missing column never loses the whole answer, and is used again once added', async () => {
+  const { createStore, missingColumnName } = await import('../src/store.js');
+  assert.equal(missingColumnName(`Supabase x POST failed: 400 {"code":"PGRST204","message":"Could not find the 'age' column of 'survey_responses' in the schema cache"}`), 'age');
+  assert.equal(missingColumnName('column "feelings" of relation "survey_responses" does not exist'), 'feelings');
+  let cols = ['id', 'lang', 'location'];
+  const saved = [];
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (url, opts) => {
+    const row = JSON.parse(opts.body);
+    const bad = Object.keys(row).find((k) => !cols.includes(k));
+    if (bad) return new Response(JSON.stringify({ code: 'PGRST204', message: `Could not find the '${bad}' column of 'survey_responses' in the schema cache` }), { status: 400 });
+    saved.push(row);
+    return new Response(JSON.stringify([row]), { status: 201 });
+  };
+  try {
+    const store = createStore({ table: 'survey_responses', supabaseUrl: 'https://x.supabase.co', supabaseKey: 'k' });
+    await store.insert({ lang: 'mn', location: 'soum', age: 24, feelings: ['afraid'] });
+    assert.deepEqual(saved.at(-1), { lang: 'mn', location: 'soum' });
+    assert.deepEqual([...store.missingColumns].sort(), ['age', 'feelings']);
+    cols = [...cols, 'age', 'feelings']; // schema.sql re-run
+    await store.insert({ lang: 'en', location: 'ulaanbaatar', age: 30, feelings: ['calm'] });
+    assert.deepEqual(saved.at(-1), { lang: 'en', location: 'ulaanbaatar', age: 30, feelings: ['calm'] });
+    assert.equal(store.missingColumns.size, 0);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+});

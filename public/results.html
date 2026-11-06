@@ -340,8 +340,13 @@ function viewSurvey() {
     el('p', {}, el('a', { href: '/survey', target: '_blank', className: 'link' }, link)),
     el('div', { className: 'filters' }, copyBtn,
       el('button', { type: 'button', className: 'small', onclick: () => download('survey') }, 'Export survey CSV')));
-  const problem = o.survey_live === false
-    ? el('p', { className: 'alert today' }, 'Survey answers can\'t be read from the database: ' + (o.survey_error || '') + ' (Run the latest db/schema.sql in the Supabase SQL Editor: it adds the survey_responses table.)')
+  const notes = [];
+  if (o.survey_live === false) notes.push('Survey answers can\'t be read from the database: ' + (o.survey_error || ''));
+  if (o.survey_backup) notes.push(`${o.survey_backup} answer(s) are kept in a temporary backup on the server because the database refused them. They move into the database automatically once it works, but a server restart before then loses them.`);
+  if ((o.survey_missing_columns || []).length) notes.push(`The database is missing these columns, so those answers were not saved: ${o.survey_missing_columns.join(', ')}.`);
+  const problem = notes.length
+    ? el('div', { className: 'alert today' }, notes.map((n) => el('p', { style: 'margin:0 0 6px', textContent: n })),
+        el('p', { style: 'margin:0', textContent: 'Fix: Supabase → SQL Editor → paste the latest db/schema.sql → Run, then click Refresh here.' }))
     : null;
   if (!s || !s.respondents) return el('div', {}, problem, share, el('div', { className: 'card' }, el('h2', {}, 'No survey answers yet'), empty('Share the link above. Results appear here as soon as the first answer arrives.')));
   return el('div', {},

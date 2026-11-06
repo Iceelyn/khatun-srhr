@@ -52,6 +52,9 @@ const events = createStore({ table: 'events', path: config.metricsPath, supabase
 const feedbackDB = db('tester_feedback', 'feedback.jsonl');
 const interviewDB = db('interviews', 'interviews.jsonl');
 const surveyDB = db('survey_responses', 'survey.jsonl');
+// Backup for survey answers when the database refuses them (table missing, database down), so a
+// respondent never loses her answers. Moved into the database automatically once it works.
+const surveyBackup = createStore({ table: 'survey_responses', path: join(config.dataDir, 'survey-backup.jsonl') });
 const metrics = createMetrics(events);
 if (events.kind === 'file') console.warn('Storage: local files in data/. On free hosting these are wiped on restart; set SUPABASE_URL and SUPABASE_SERVICE_KEY to keep tester feedback.');
 const messenger = config.pageToken ? createMessenger(config) : null;
@@ -121,15 +124,39 @@ const INTERVIEW_COLUMNS = ['id', 'created_at', 'code', 'grp', 'method', 'month',
 // Live survey results from the database; falls back to an imported Google Forms summary.
 // A missing survey table must not break the rest of the results page.
 async function surveySummary() {
+  let rows = [];
+  let survey_error = '';
   try {
-    const rows = await surveyDB.list();
-    if (rows.length) return { survey: summarizeSurveyResponses(rows), survey_live: true };
-    return { survey: readSurveySummary(), survey_live: true };
+    rows = await surveyDB.list();
   } catch (err) {
     console.error('survey read failed:', err.message);
-    const hint = surveyDB.kind === 'supabase' ? explainSupabaseError(err.message) : 'Could not read survey answers.';
-    return { survey: readSurveySummary(), survey_live: false, survey_error: hint };
+    survey_error = surveyDB.kind === 'supabase' ? explainSupabaseError(err.message) : 'Could not read survey answers.';
   }
+  let backup = surveyDB.kind === 'supabase' ? await surveyBackup.list().catch(() => []) : [];
+  if (backup.length && !survey_error) {
+    // The database works again: move backed-up answers into it.
+    for (const r of backup) {
+      try {
+        const { id, ...rest } = r;
+        await surveyDB.insert(rest);
+        await surveyBackup.remove(id);
+      } catch (err) {
+        console.error('survey backup move failed:', err.message);
+        break;
+      }
+    }
+    backup = await surveyBackup.list().catch(() => []);
+    rows = await surveyDB.list().catch(() => rows);
+  }
+  const all = [...rows, ...backup];
+  const missing = [...(surveyDB.missingColumns || [])];
+  return {
+    survey: all.length ? summarizeSurveyResponses(all) : readSurveySummary(),
+    survey_live: !survey_error,
+    survey_error,
+    survey_backup: backup.length,
+    survey_missing_columns: missing,
+  };
 }
 
 function readSurveySummary() {
@@ -327,9 +354,13 @@ async function route(req, res) {
     try {
       await surveyDB.insert(row);
     } catch (err) {
-      // Usually the survey_responses table hasn't been created yet (run db/schema.sql).
-      console.error('survey insert failed:', err.message, '|', explainSupabaseError(err.message));
-      return send(res, 503, { error: 'The survey is not ready yet. Please try again later. · Судалгаа түр ажиллахгүй байна, дараа дахин оролдоно уу.' });
+      console.error('survey insert failed, saved to backup:', err.message, '|', explainSupabaseError(err.message));
+      try {
+        await surveyBackup.insert(row);
+      } catch (err2) {
+        console.error('survey backup failed too:', err2.message);
+        return send(res, 503, { error: 'The survey is not ready yet. Please try again later. · Судалгаа түр ажиллахгүй байна, дараа дахин оролдоно уу.' });
+      }
     }
     return send(res, 200, { ok: true });
   }

@@ -97,9 +97,27 @@ function supabaseStore(table, base, key) {
         return { ok: false, hint: explainSupabaseError(err.message) };
       }
     },
+    // Columns the table turned out not to have (e.g. db/schema.sql not re-run after new survey
+    // questions). Insert drops them and retries, so one missing column never loses a whole answer.
+    missingColumns: new Set(),
     async insert(row) {
-      const out = await call(url, { method: 'POST', headers: { prefer: 'return=representation' }, body: JSON.stringify(row) });
-      return out?.[0] ?? row;
+      // Always try the full answer first, so columns added later (schema.sql re-run) are used at once.
+      const body = { ...row };
+      const dropped = new Set();
+      for (let tries = 0; tries < 40; tries++) {
+        try {
+          const out = await call(url, { method: 'POST', headers: { prefer: 'return=representation' }, body: JSON.stringify(body) });
+          this.missingColumns = dropped; // reflects the database as it is now
+          return out?.[0] ?? body;
+        } catch (err) {
+          const col = missingColumnName(err.message);
+          if (!col || !(col in body)) throw err;
+          dropped.add(col);
+          delete body[col];
+          console.error(`Supabase ${table}: column "${col}" is missing; saved the answer without it. Run db/schema.sql to add it.`);
+        }
+      }
+      throw new Error(`Supabase ${table} insert failed: too many missing columns`);
     },
     async list() {
       return call(`${url}?select=*&order=created_at.desc`, { method: 'GET' });
@@ -117,6 +135,12 @@ function supabaseStore(table, base, key) {
       return true;
     },
   };
+}
+
+// Name of the column a Supabase/Postgres error says is missing, or null.
+export function missingColumnName(message = '') {
+  const m = String(message);
+  return (m.match(/Could not find the '([^']+)' column/i) || m.match(/column "([^"]+)" of relation "[^"]+" does not exist/i) || [])[1] || null;
 }
 
 // Turns a Supabase error into a plain fix the team can act on.
