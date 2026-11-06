@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Naiz · Судалгаа</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <span class="pill safe left" id="anon"></span>
+    <a class="brand" href="/">Naiz</a>
+    <button id="lang" type="button" aria-label="Switch language">EN</button>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+// Anonymous problem-validation survey. Questions come from the server (src/survey-form.js).
+const T = {
+  mn: {
+    anon: 'Нэргүй', eyebrow: '2–3 минут · Нэргүй',
+    title: 'Залуу эмэгтэйчүүдийн эрүүл мэндийн судалгаа',
+    intro: [
+      'Энэхүү судалгаа нь 18 болон түүнээс дээш насны Монгол эмэгтэйчүүдийн бэлгийн эрүүл мэндийн талаарх мэдлэг, ойлголт, хандлагыг тодорхойлох, цаашид бүтээгдэхүүн хөгжүүлэхэд шаардлагатай хэрэглэгчийн хэрэгцээ, санал бодлыг судлах зорилготой.',
+      'Судалгаа нь сайн дурын үндсэн дээр явагдах бөгөөд таны нэр, утасны дугаар, цахим шуудангийн хаяг зэрэг хувийн мэдээллийг цуглуулахгүй. Таны өгсөн хариултыг бүрэн нууцлалтайгаар хадгалж, зөвхөн судалгааны зорилгоор ашиглана.',
+      'Судалгаанд зарцуулах хугацаа: 2-3 минут',
+    ],
+    agePlaceholder: 'Жишээ нь: 22', under18: 'Энэ судалгаанд зөвхөн 18 ба түүнээс дээш насныхан оролцоно.',
+    consent: 'Би 18 ба түүнээс дээш настай бөгөөд нэргүй хариултаа судалгаанд ашиглахыг зөвшөөрч байна.',
+    noNames: 'Нэр, утас, хаяг бүү бичээрэй', send: 'Илгээх', sending: 'Илгээж байна…',
+    needConsent: 'Илгээхийн өмнө зөвшөөрлийн нүдийг чагтлана уу.', needAge: 'Насаа бичнэ үү.',
+    error: 'Алдаа гарлаа. Дахин оролдоно уу.', optional: '(заавал биш)',
+    thanksTitle: 'Баярлалаа!', thanks: 'Таны хариулт нэргүйгээр хадгалагдлаа. Энэ нь залуу эмэгтэйчүүдэд илүү сайн үйлчилгээ бий болгоход тусална.',
+    tryNaiz: 'Naiz-ийг туршиж үзэх', help: 'Яаралтай тусламж хэрэгтэй бол 103 руу залгаарай.',
+  },
+  en: {
+    anon: 'Anonymous', eyebrow: '2–3 minutes · Anonymous',
+    title: "Young women's health survey",
+    intro: [
+      'This survey aims to understand the knowledge, understanding and attitudes about sexual health of Mongolian women aged 18 and over, and to learn the needs and opinions of users that will guide the development of our product.',
+      'Taking part is voluntary. We do not collect personal information such as your name, phone number or email address. Your answers are stored completely confidentially and used only for research.',
+      'Time needed: 2-3 minutes',
+    ],
+    agePlaceholder: 'For example: 22', under18: 'This survey is only for people aged 18 or older.',
+    consent: 'I am 18 or older and I agree that my anonymous answers are used for this research.',
+    noNames: "Please don't write names, phone numbers or addresses", send: 'Send', sending: 'Sending…',
+    needConsent: 'Please tick the consent box before sending.', needAge: 'Please enter your age.',
+    error: 'Something went wrong. Please try again.', optional: '(optional)',
+    thanksTitle: 'Thank you!', thanks: 'Your answers were saved anonymously. They help us build a better service for young women.',
+    tryNaiz: 'Try Naiz', help: 'If you need urgent help, call 103.',
+  },
+};
+let lang = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'mn';
+let questions = [];
+let sent = false;
+const state = { consent: false };
+const app = document.getElementById('app');
+
+function el(tag, props = {}, ...kids) {
+  const n = Object.assign(document.createElement(tag), props);
+  for (const k of kids.flat()) if (k != null && k !== false) n.append(k);
+  return n;
+}
+
+function visible(q) {
+  return !q.showIf || Object.entries(q.showIf).every(([k, v]) => state[k] === v);
+}
+
+function field(q) {
+  const t = T[lang];
+  const legend = el('legend', {}, q[lang], q.type === 'text' ? el('span', { className: 'muted', textContent: ' ' + t.optional }) : null);
+  const hint = q[`hint_${lang}`] ? el('p', { className: 'muted q-hint', textContent: q[`hint_${lang}`] }) : null;
+  if (q.type === 'number') {
+    const input = el('input', { type: 'number', id: 'q_' + q.id, inputMode: 'numeric', min: q.min, max: q.max, step: 1, value: state[q.id] || '', placeholder: t.agePlaceholder, className: 'age-input' });
+    input.addEventListener('input', () => { state[q.id] = input.value.trim(); });
+    return el('fieldset', {}, legend, hint, el('label', { htmlFor: 'q_' + q.id, className: 'sr-only', textContent: q[lang] }), input);
+  }
+  if (q.type === 'text') {
+    const ta = el('textarea', { id: 'q_' + q.id, rows: 3, maxLength: 500, value: state[q.id] || '', placeholder: t.noNames });
+    ta.addEventListener('input', () => { state[q.id] = ta.value; });
+    return el('fieldset', {}, legend, hint, ta);
+  }
+  if (q.type === 'multi') {
+    const chosen = new Set(state[q.id] || []);
+    return el('fieldset', {}, legend, hint, q.options.map((o) => {
+      const input = el('input', { type: 'checkbox', name: q.id, value: o.value, checked: chosen.has(o.value) });
+      input.addEventListener('change', () => {
+        input.checked ? chosen.add(o.value) : chosen.delete(o.value);
+        state[q.id] = [...chosen];
+      });
+      return el('label', { className: 'opt' }, input, el('span', { textContent: o[lang] }));
+    }));
+  }
+  const wrapClass = q.type === 'scale' ? 'scale' : '';
+  return el('fieldset', { className: wrapClass }, legend, hint, el('div', { className: 'choices' }, q.options.map((o) => {
+    const input = el('input', { type: 'radio', name: q.id, value: o.value, checked: state[q.id] === o.value });
+    input.addEventListener('change', () => {
+      state[q.id] = o.value;
+      if (questions.some((x) => x.showIf && q.id in x.showIf)) render(); // show or hide follow-up questions
+    });
+    return el('label', { className: 'choice' }, input, el('span', { textContent: o[lang] }));
+  })));
+}
+
+function render() {
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  document.getElementById('lang').textContent = lang === 'mn' ? 'EN' : 'МН';
+  document.getElementById('anon').textContent = t.anon;
+  const y = window.scrollY;
+  if (sent) {
+    app.replaceChildren(el('div', { className: 'card' }, el('h1', { textContent: t.thanksTitle }), el('p', { textContent: t.thanks }),
+      el('p', {}, el('a', { className: 'btn primary', href: '/', textContent: t.tryNaiz }))));
+    return;
+  }
+  const msg = el('p', { className: 'form-msg', role: 'alert' });
+  const btn = el('button', { className: 'primary', type: 'submit', textContent: t.send });
+  const consent = el('input', { type: 'checkbox', checked: state.consent });
+  consent.addEventListener('change', () => { state.consent = consent.checked; if (consent.checked) msg.textContent = ''; });
+  const form = el('form', { noValidate: true },
+    questions.filter(visible).map(field),
+    el('label', { className: 'opt consent' }, consent, el('span', { textContent: t.consent })),
+    msg, btn);
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const age = Number(state.age);
+    if (!state.age || !Number.isInteger(age) || age < 1) { msg.textContent = t.needAge; document.getElementById('q_age')?.focus(); return; }
+    if (age < 18) { msg.textContent = t.under18; return; }
+    if (!state.consent) { msg.textContent = t.needConsent; return; }
+    btn.disabled = true; btn.textContent = t.sending;
+    try {
+      const res = await fetch('/api/survey', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...state, lang }) });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || res.status);
+      sent = true;
+      render();
+      window.scrollTo(0, 0);
+    } catch (err) {
+      msg.textContent = err && err.message && !/^\d+$/.test(err.message) ? `${t.error} (${err.message})` : t.error;
+      btn.disabled = false; btn.textContent = t.send;
+    }
+  });
+  app.replaceChildren(
+    el('div', { className: 'card hero' }, el('span', { className: 'eyebrow', textContent: t.eyebrow }), el('h1', { textContent: t.title }),
+      t.intro.map((para, i) => el('p', { className: i === t.intro.length - 1 ? 'muted survey-time' : 'muted', textContent: para }))),
+    form,
+    el('p', { className: 'muted', textContent: t.help }));
+  window.scrollTo(0, y);
+}
+
+document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; render(); });
+fetch('/api/survey/questions').then((r) => r.json()).then((q) => { questions = q; render(); })
+  .catch(() => { app.replaceChildren(el('p', { className: 'form-msg', textContent: T[lang].error })); });
+</script>
+</body>
+</html>

@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Naiz · Private sexual health companion for young women in Mongolia</title>
+<meta name="description" content="Naiz is an open-source, AI-powered, doctor-backed sexual and reproductive health companion for young women in Mongolia, in Mongolian and English.">
+<style>
+:root {
+  --primary: #7b6cf6; --primary-dark: #5b4be0; --primary-soft: #eeebff;
+  --pink-soft: #ffe1ef; --pink-ink: #a8216a; --blue: #2f80ed; --blue-soft: #e3efff;
+  --green-soft: #e2f4ea; --green-ink: #1d6b3f; --amber-soft: #fff3dc; --amber-ink: #6b4700;
+  --ink: #1f1d2b; --muted: #5f5c74; --line: #e6e2f3; --bg: #f6f4ff; --card: #fff;
+  --shadow: 0 8px 28px rgba(91, 75, 224, .10);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
+a { color: var(--primary-dark); }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+header.top { position: sticky; top: 0; z-index: 10; background: rgba(246, 244, 255, .9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
+.brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; font-size: 20px; color: var(--ink); text-decoration: none; }
+.brand svg { width: 28px; height: 28px; }
+nav.links { display: flex; gap: 18px; font-size: 14px; font-weight: 700; }
+nav.links a { color: var(--muted); text-decoration: none; }
+nav.links a:hover { color: var(--primary-dark); }
+.langs { display: inline-flex; background: var(--card); border-radius: 999px; padding: 3px; box-shadow: 0 2px 8px rgba(91, 75, 224, .08); }
+.langs button { font: inherit; font-size: 13px; font-weight: 800; border: 0; background: transparent; color: var(--muted); padding: 6px 12px; border-radius: 999px; cursor: pointer; min-height: 32px; }
+.langs button[aria-pressed='true'] { background: var(--primary); color: #fff; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.hero { padding: 56px 0 32px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; align-items: center; }
+.eyebrow { display: inline-block; font-size: 13px; font-weight: 800; color: var(--primary-dark); background: var(--primary-soft); padding: 5px 12px; border-radius: 999px; margin-bottom: 14px; }
+h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.12; margin: 0 0 14px; letter-spacing: -.6px; }
+.lead { font-size: 18px; color: var(--muted); margin: 0 0 22px; }
+.ctas { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; padding: 10px 20px; border-radius: 14px; font-weight: 800; text-decoration: none; }
+.btn.primary { background: var(--primary); color: #fff; box-shadow: 0 8px 20px rgba(123, 108, 246, .35); }
+.btn.secondary { background: var(--card); color: var(--ink); box-shadow: 0 2px 8px rgba(91, 75, 224, .1); }
+.phones { display: flex; justify-content: center; gap: 12px; }
+.phones img { width: 46%; max-width: 210px; border-radius: 26px; border: 6px solid #1f1d2b; box-shadow: var(--shadow); background: #fff; }
+.phones img:nth-child(2) { margin-top: 36px; }
+
+section { padding: 44px 0; }
+h2 { font-size: clamp(24px, 3.4vw, 32px); line-height: 1.2; margin: 0 0 8px; letter-spacing: -.3px; }
+.sub { color: var(--muted); margin: 0 0 24px; max-width: 720px; }
+.grid { display: grid; gap: 14px; }
+.g3 { grid-template-columns: repeat(3, 1fr); }
+.g2 { grid-template-columns: repeat(2, 1fr); }
+.card { background: var(--card); border-radius: 20px; padding: 20px; box-shadow: var(--shadow); }
+.stat .num { font-size: 30px; font-weight: 800; color: var(--primary-dark); line-height: 1.1; letter-spacing: -.5px; }
+.stat p { margin: 6px 0 8px; }
+.src { font-size: 12px; color: var(--muted); }
+.feature h3, .card h3 { margin: 10px 0 6px; font-size: 18px; }
+.feature p, .card p { margin: 0; color: var(--muted); font-size: 15px; }
+.ico { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; }
+.ico svg { width: 22px; height: 22px; }
+.ico.purple { background: var(--primary-soft); color: var(--primary-dark); }
+.ico.blue { background: var(--blue-soft); color: var(--blue); }
+.ico.pink { background: var(--pink-soft); color: var(--pink-ink); }
+.ico.green { background: var(--green-soft); color: var(--green-ink); }
+
+.flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; align-items: stretch; counter-reset: s; }
+.flow .card { padding: 16px; position: relative; }
+.flow .card::before { counter-increment: s; content: counter(s); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: #fff; font-weight: 800; font-size: 13px; margin-bottom: 8px; }
+.flow .card.alt { background: var(--pink-soft); }
+.flow h3 { font-size: 15px; margin: 0 0 4px; }
+.flow p { font-size: 13px; }
+
+.methods { display: grid; gap: 10px; }
+.method { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; background: var(--card); border-radius: 16px; padding: 14px 16px; box-shadow: 0 2px 10px rgba(91, 75, 224, .07); }
+.method p { margin: 0; font-size: 15px; }
+.badge { font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.badge.done { background: var(--green-soft); color: var(--green-ink); }
+.badge.in_progress { background: var(--amber-soft); color: var(--amber-ink); }
+.badge.planned { background: var(--primary-soft); color: var(--primary-dark); }
+.method a { font-size: 13px; font-weight: 700; white-space: nowrap; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 18px; }
+.metric .num { font-size: 26px; font-weight: 800; color: var(--primary-dark); }
+.metric p { margin: 4px 0 0; font-size: 14px; color: var(--muted); }
+blockquote { margin: 0; padding: 16px 18px; background: var(--card); border-left: 4px solid var(--primary); border-radius: 0 16px 16px 0; font-size: 16px; }
+blockquote cite { display: block; margin-top: 6px; font-size: 13px; color: var(--muted); font-style: normal; }
+
+.timeline { display: grid; gap: 12px; }
+.tl { display: grid; grid-template-columns: 90px 1fr; gap: 14px; }
+.tl .v { font-weight: 800; color: var(--primary-dark); }
+.tl .v small { display: block; font-weight: 600; color: var(--muted); font-size: 12px; }
+.tl p { margin: 0; }
+
+.roadmap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.roadmap .card h3 { margin-top: 0; color: var(--primary-dark); }
+.roadmap ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+.roadmap li { margin-bottom: 4px; }
+
+.cta-band { background: linear-gradient(135deg, #8f84f8, #6d5df2); color: #fff; border-radius: 26px; padding: 32px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; }
+.cta-band h2 { color: #fff; }
+.cta-band p { margin: 0; opacity: .9; }
+.cta-band .btn.primary { background: #fff; color: var(--primary-dark); }
+footer { padding: 32px 0 48px; color: var(--muted); font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; }
+[hidden] { display: none !important; }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; padding-top: 32px; }
+  .g3, .roadmap { grid-template-columns: 1fr 1fr; }
+  .flow { grid-template-columns: 1fr 1fr; }
+  nav.links { display: none; }
+}
+@media (max-width: 560px) {
+  .g3, .g2, .roadmap, .flow { grid-template-columns: 1fr; }
+  .method { grid-template-columns: 1fr; gap: 6px; }
+  .tl { grid-template-columns: 1fr; gap: 2px; }
+  .cta-band { padding: 24px; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Naiz">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><g fill="#7b6cf6"><circle cx="20" cy="9" r="7"/><circle cx="31" cy="17" r="7"/><circle cx="27" cy="30" r="7"/><circle cx="13" cy="30" r="7"/><circle cx="9" cy="17" r="7"/></g><circle cx="20" cy="20" r="7.5" fill="#ffc93c"/></svg>
+      Naiz
+    </a>
+    <nav class="links" aria-label="Sections">
+      <a href="#problem" data-t="navProblem">Problem</a>
+      <a href="#solution" data-t="navSolution">Solution</a>
+      <a href="#ai" data-t="navAI">How the AI works</a>
+      <a href="#evidence" data-t="navEvidence">Evidence</a>
+      <a href="#roadmap" data-t="navRoadmap">Roadmap</a>
+    </nav>
+    <div class="langs" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="mn" aria-pressed="false">МН</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <span class="eyebrow" data-t="eyebrow">Open-source · AI-powered · Doctor-backed</span>
+        <h1 data-t="h1">Private sexual health answers for young women in Mongolia</h1>
+        <p class="lead" data-t="lead">Naiz is an anonymous chat and 2-minute check that turns shame and silence into a test at a free clinic. Answers come only from a knowledge base written and approved by doctors, in Mongolian and English.</p>
+        <div class="ctas">
+          <a class="btn primary" id="tryLink" href="#" data-t="try" hidden>Try the prototype</a>
+          <a class="btn secondary" id="repoLink" href="https://github.com/iceelyn/khatun-srhr" data-t="code">View the code</a>
+        </div>
+      </div>
+      <div class="phones">
+        <img src="img/welcome-en.png" alt="Naiz welcome screen: a safe, private space" width="390" height="844" data-alt="altChat">
+        <img src="img/check-en.png" alt="Naiz private check screen" width="390" height="844" data-alt="altCheck">
+      </div>
+    </div>
+  </div>
+
+  <section id="problem">
+    <div class="wrap">
+      <h2 data-t="pTitle">The services exist. Young women don't use them.</h2>
+      <p class="sub" data-t="pSub">HPV vaccination, cervical screening and STI testing are free in Mongolia, yet uptake is low. Shame, fear of being seen and untrusted information keep young women away, so infections go unnoticed and cancer is found late.</p>
+      <div class="grid g3">
+        <div class="card stat"><div class="num">~38%</div><p data-t="s1">of eligible women had cervical screening in 2024, against a 70% target</p><a class="src" href="https://www.who.int/mongolia/news/detail/22-04-2025-mongolia-launches-national-programme-to-eliminate-cervical-cancer">WHO Mongolia, 2025</a></div>
+        <div class="card stat"><div class="num">55%</div><p data-t="s2">HPV vaccine coverage among 11-year-olds in 2024, against a 75% target</p><a class="src" href="https://www.who.int/mongolia/news/detail/04-09-2025-immunization-for-all--mongolia-s-drive-to-protect-every-child">WHO Mongolia, 2025</a></div>
+        <div class="card stat"><div class="num">551</div><p data-t="s3">new cervical cancer cases and 171 deaths in 2025</p><a class="src" href="https://www.easternmirrornagaland.com/20000-women-to-be-screened-for-hpv-in-mongolia-this-year">Xinhua, 2026</a></div>
+        <div class="card stat"><div class="num">~16,000</div><p data-t="s4">STI infections recorded each year; about 45% of syphilis cases are aged 20–29</p><a class="src" href="https://theubposts.com/a/12442">NCCD via UB Post</a></div>
+        <div class="card stat"><div class="num">44%</div><p data-t="s5">of women who chose HPV self-sampling did so to avoid embarrassment at the exam</p><a class="src" href="https://journal.waocp.org/article_90402.html">APJCP, 2022</a></div>
+        <div class="card stat"><div class="num">82%</div><p data-t="s6">of women in one study didn't know an HPV vaccine existed, yet 89% wanted it</p><a class="src" href="https://journal.waocp.org/article_90402.html">APJCP, 2022</a></div>
+      </div>
+      <p class="src" style="margin-top:14px"><a href="https://github.com/iceelyn/khatun-srhr/blob/main/research/01-desk-evidence.md" class="docLink" data-path="research/01-desk-evidence.md" data-t="allSources">All sources (desk research)</a></p>
+    </div>
+  </section>
+
+  <section id="solution">
+    <div class="wrap">
+      <h2 data-t="sTitle">What Naiz does</h2>
+      <p class="sub" data-t="sSub">Built for our early adopters: women aged 18–24 in Ulaanbaatar and aimag centres who use their phone for everything and would never ask these questions out loud.</p>
+      <div class="grid g2">
+        <div class="card feature">
+          <span class="ico purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span>
+          <h3 data-t="f1t">Anonymous chat</h3>
+          <p data-t="f1d">Ask anything in Mongolian (Cyrillic or Latin letters) or English, on the web or Facebook Messenger. No name, no phone number, no account.</p>
+        </div>
+        <div class="card feature">
+          <span class="ico blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 12l2 2 4-4"/></svg></span>
+          <h3 data-t="f2t">"Should I get checked?"</h3>
+          <p data-t="f2d">A 2-minute private check, with rules set by doctors, that suggests which test makes sense and how soon. Not a diagnosis. Answers are never stored.</p>
+        </div>
+        <div class="card feature">
+          <span class="ico green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><path d="M12 7v5M9.5 9.5h5"/></svg></span>
+          <h3 data-t="f3t">Free clinics first</h3>
+          <p data-t="f3d">The clinic finder always lists free public services first: family health centres, STI clinics and adolescent-friendly rooms.</p>
+        </div>
+        <div class="card feature">
+          <span class="ico pink"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+          <h3 data-t="f4t">Safety first</h3>
+          <p data-t="f4d">Messages about self-harm, sexual assault, violence or emergencies never reach the AI. They get a fixed, doctor-approved reply with emergency numbers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="ai">
+    <div class="wrap">
+      <h2 data-t="aTitle">How the AI works</h2>
+      <p class="sub" data-t="aSub">A large language model understands the question in whatever language or spelling it comes in, then answers only from entries our doctors approved. It never diagnoses and never names medicines or doses.</p>
+      <div class="flow">
+        <div class="card"><h3 data-t="a1t">Question</h3><p data-t="a1d">Mongolian Cyrillic, Latin-script Mongolian or English, from web or Messenger.</p></div>
+        <div class="card alt"><h3 data-t="a2t">Safety check</h3><p data-t="a2d">Red-flag patterns run first. A match gets a fixed reply with emergency numbers.</p></div>
+        <div class="card"><h3 data-t="a3t">Grounded AI answer</h3><p data-t="a3d">The model may only use approved knowledge-base entries and cites their ids for audit.</p></div>
+        <div class="card"><h3 data-t="a4t">Next step</h3><p data-t="a4d">Every answer offers the private check and the free clinic list.</p></div>
+        <div class="card"><h3 data-t="a5t">Anonymous data</h3><p data-t="a5d">Only counts are kept: topics, check levels, thumbs up/down. Never message text.</p></div>
+      </div>
+      <div class="grid g3" style="margin-top:14px">
+        <div class="card"><h3 data-t="r1t">Doctor-approved content</h3><p data-t="r1d">39 Q&amp;A entries, each with a source. Only entries marked approved are used when Naiz goes live.</p></div>
+        <div class="card"><h3 data-t="r2t">Works without AI too</h3><p data-t="r2d">If the AI model is unavailable, keyword matching returns the closest approved entry, so the service never goes dark.</p></div>
+        <div class="card"><h3 data-t="r3t">AI-assisted research</h3><p data-t="r3d">The team page groups tester comments into themes with AI; the team checks every theme against the real comments.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="evidence">
+    <div class="wrap">
+      <h2 data-t="eTitle">Evidence and iteration</h2>
+      <p class="sub" data-t="eSub">We test, triage every finding (P0–P3, MoSCoW), fix, and test again. Only real results appear here; a line appears once the data exists.</p>
+      <div class="methods" id="methods"></div>
+      <div class="metrics" id="metrics"></div>
+      <div class="grid g2" id="quotes" style="margin-top:18px"></div>
+      <h3 style="margin-top:32px" data-t="iterTitle">What we changed, version by version</h3>
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <div class="wrap">
+      <h2 data-t="rmTitle">Next 12 months</h2>
+      <p class="sub" data-t="rmSub">From a tested prototype to a pilot that measures real tests booked and completed.</p>
+      <div class="roadmap">
+        <div class="card"><h3 data-t="q1">Months 1–3</h3><ul><li data-t="q1a">Doctors review and approve every knowledge-base entry</li><li data-t="q1b">Mongolian answers written and checked by the team</li><li data-t="q1c">Data protection review</li><li data-t="q1d">Verify partner clinics</li></ul></div>
+        <div class="card"><h3 data-t="q2">Months 4–6</h3><ul><li data-t="q2a">Pilot with 2–3 clinics in Ulaanbaatar</li><li data-t="q2b">Messenger channel through Meta App Review</li><li data-t="q2c">Anonymous test reminders</li></ul></div>
+        <div class="card"><h3 data-t="q3">Months 7–9</h3><ul><li data-t="q3a">Measure tests booked and completed via partner clinics</li><li data-t="q3b">Parents' HPV vaccine module</li><li data-t="q3c">Mongolian voice input</li></ul></div>
+        <div class="card"><h3 data-t="q4">Months 10–12</h3><ul><li data-t="q4a">Expand to aimag centres</li><li data-t="q4b">Publish pilot results and the open knowledge base</li><li data-t="q4c">Apply for Digital Public Good status</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="cta-band">
+        <div>
+          <h2 data-t="osTitle">Open source, open content</h2>
+          <p data-t="osSub">Code under the MIT licence. Knowledge base under CC BY 4.0, so any clinic or country can reuse it.</p>
+        </div>
+        <a class="btn primary" href="https://github.com/iceelyn/khatun-srhr" data-t="code">View the code</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span data-t="disclaimer">Naiz gives general health information, not medical advice or diagnosis. In an emergency in Mongolia call 103.</span>
+    <span id="updated"></span>
+  </div>
+</footer>
+
+<script>
+// Bilingual project page. English for reviewers, Mongolian for our users.
+// Results are read from evidence.json; empty values are hidden, never faked.
+const T = {
+  en: {
+    navProblem: 'Problem', navSolution: 'Solution', navAI: 'How the AI works', navEvidence: 'Evidence', navRoadmap: 'Roadmap',
+    eyebrow: 'Open-source · AI-powered · Doctor-backed',
+    h1: 'Private sexual health answers for young women in Mongolia',
+    lead: 'Naiz is an anonymous chat and 2-minute check that turns shame and silence into a test at a free clinic. Answers come only from a knowledge base written and approved by doctors, in Mongolian and English.',
+    try: 'Try the prototype', code: 'View the code',
+    altChat: 'Naiz welcome screen: a safe, private space', altCheck: 'Naiz private check screen',
+    pTitle: "The services exist. Young women don't use them.",
+    pSub: 'HPV vaccination, cervical screening and STI testing are free in Mongolia, yet uptake is low. Shame, fear of being seen and untrusted information keep young women away, so infections go unnoticed and cancer is found late.',
+    s1: 'of eligible women had cervical screening in 2024, against a 70% target',
+    s2: 'HPV vaccine coverage among 11-year-olds in 2024, against a 75% target',
+    s3: 'new cervical cancer cases and 171 deaths in 2025',
+    s4: 'STI infections recorded each year; about 45% of syphilis cases are aged 20–29',
+    s5: 'of women who chose HPV self-sampling did so to avoid embarrassment at the exam',
+    s6: "of women in one study didn't know an HPV vaccine existed, yet 89% wanted it",
+    allSources: 'All sources (desk research)',
+    sTitle: 'What Naiz does',
+    sSub: 'Built for our early adopters: women aged 18–24 in Ulaanbaatar and aimag centres who use their phone for everything and would never ask these questions out loud.',
+    f1t: 'Anonymous chat', f1d: 'Ask anything in Mongolian (Cyrillic or Latin letters) or English, on the web or Facebook Messenger. No name, no phone number, no account.',
+    f2t: '"Should I get checked?"', f2d: 'A 2-minute private check, with rules set by doctors, that suggests which test makes sense and how soon. Not a diagnosis. Answers are never stored.',
+    f3t: 'Free clinics first', f3d: 'The clinic finder always lists free public services first: family health centres, STI clinics and adolescent-friendly rooms.',
+    f4t: 'Safety first', f4d: 'Messages about self-harm, sexual assault, violence or emergencies never reach the AI. They get a fixed, doctor-approved reply with emergency numbers.',
+    aTitle: 'How the AI works',
+    aSub: 'A large language model understands the question in whatever language or spelling it comes in, then answers only from entries our doctors approved. It never diagnoses and never names medicines or doses.',
+    a1t: 'Question', a1d: 'Mongolian Cyrillic, Latin-script Mongolian or English, from web or Messenger.',
+    a2t: 'Safety check', a2d: 'Red-flag patterns run first. A match gets a fixed reply with emergency numbers.',
+    a3t: 'Grounded AI answer', a3d: 'The model may only use approved knowledge-base entries and cites their ids for audit.',
+    a4t: 'Next step', a4d: 'Every answer offers the private check and the free clinic list.',
+    a5t: 'Anonymous data', a5d: 'Only counts are kept: topics, check levels, thumbs up/down. Never message text.',
+    r1t: 'Doctor-approved content', r1d: '39 Q&A entries, each with a source. Only entries marked approved are used when Naiz goes live.',
+    r2t: 'Works without AI too', r2d: 'If the AI model is unavailable, keyword matching returns the closest approved entry, so the service never goes dark.',
+    r3t: 'AI-assisted research', r3d: 'The team page groups tester comments into themes with AI; the team checks every theme against the real comments.',
+    eTitle: 'Evidence and iteration',
+    eSub: 'We test, triage every finding (P0–P3, MoSCoW), fix, and test again. Only real results appear here; a line appears once the data exists.',
+    status: { done: 'Done', in_progress: 'In progress', planned: 'Planned' },
+    participants: (n) => `n = ${n}`, details: 'Details',
+    iterTitle: 'What we changed, version by version',
+    rmTitle: 'Next 12 months', rmSub: 'From a tested prototype to a pilot that measures real tests booked and completed.',
+    q1: 'Months 1–3', q1a: 'Doctors review and approve every knowledge-base entry', q1b: 'Mongolian answers written and checked by the team', q1c: 'Data protection review', q1d: 'Verify partner clinics',
+    q2: 'Months 4–6', q2a: 'Pilot with 2–3 clinics in Ulaanbaatar', q2b: 'Messenger channel through Meta App Review', q2c: 'Anonymous test reminders',
+    q3: 'Months 7–9', q3a: 'Measure tests booked and completed via partner clinics', q3b: "Parents' HPV vaccine module", q3c: 'Mongolian voice input',
+    q4: 'Months 10–12', q4a: 'Expand to aimag centres', q4b: 'Publish pilot results and the open knowledge base', q4c: 'Apply for Digital Public Good status',
+    osTitle: 'Open source, open content', osSub: 'Code under the MIT licence. Knowledge base under CC BY 4.0, so any clinic or country can reuse it.',
+    disclaimer: 'Naiz gives general health information, not medical advice or diagnosis. In an emergency in Mongolia call 103.',
+    updated: (d) => `Evidence updated ${d}`,
+    title: 'Naiz · Private sexual health companion for young women in Mongolia',
+  },
+  mn: {
+    navProblem: 'Асуудал', navSolution: 'Шийдэл', navAI: 'Хиймэл оюун', navEvidence: 'Нотолгоо', navRoadmap: 'Төлөвлөгөө',
+    eyebrow: 'Нээлттэй эх код · Хиймэл оюун · Эмчийн баталгаатай',
+    h1: 'Монгол залуу эмэгтэйчүүдэд зориулсан нууц, найдвартай бэлгийн эрүүл мэндийн зөвлөгөө',
+    lead: 'Naiz бол ичгүүр, чимээгүй байдлыг үнэгүй эмнэлэгт шинжилгээ өгөх алхам болгон хувиргах нэргүй чат ба 2 минутын шалгалт юм. Хариулт бүр эмч нарын бичиж баталсан мэдлэгийн сангаас монгол, англи хэлээр ирнэ.',
+    try: 'Прототипийг туршиж үзэх', code: 'Кодыг үзэх',
+    altChat: 'Naiz угтах дэлгэц: аюулгүй, нууц орон зай', altCheck: 'Naiz нууц шалгалтын дэлгэц',
+    pTitle: 'Үйлчилгээ байгаа ч залуу эмэгтэйчүүд ашигладаггүй.',
+    pSub: 'Монголд ХПВ-ийн вакцин, умайн хүзүүний үзлэг, БЗДХ-ын шинжилгээ үнэгүй ч хамрагдалт бага байна. Ичгүүр, бусдад мэдэгдэхээс айх, итгэж болох мэдээлэл дутмаг зэргээс болж халдвар илрэлгүй үлдэж, хорт хавдар оройтож оношлогддог.',
+    s1: 'хамрагдах ёстой эмэгтэйчүүдийн 2024 онд умайн хүзүүний үзлэгт хамрагдсан хувь (зорилт 70%)',
+    s2: '11 настай охидын ХПВ-ийн вакцины хамрагдалт, 2024 он (зорилт 75%)',
+    s3: '2025 онд шинээр бүртгэгдсэн умайн хүзүүний хорт хавдрын тохиолдол, 171 нас баралт',
+    s4: 'жил бүр бүртгэгддэг БЗДХ; тэмбүүгийн тохиолдлын 45 орчим хувь нь 20–29 настай',
+    s5: 'ХПВ-ийн өөрөө авах сорьцыг сонгосон эмэгтэйчүүдийн үзлэгээс ичсэнээс ингэж сонгосон хувь',
+    s6: 'нэг судалгаанд оролцсон эмэгтэйчүүдийн ХПВ-ийн вакцин байдгийг мэдээгүй хувь; гэвч 89% нь хийлгэхийг хүссэн',
+    allSources: 'Бүх эх сурвалж (баримт бичгийн судалгаа)',
+    sTitle: 'Naiz юу хийдэг вэ',
+    sSub: 'Анхны хэрэглэгчиддээ зориулсан: Улаанбаатар болон аймгийн төвд амьдардаг, бүх зүйлээ утсаараа хийдэг, эдгээр асуултыг хэзээ ч чангаар асуухгүй 18–24 насны эмэгтэйчүүд.',
+    f1t: 'Нэргүй чат', f1d: 'Монгол (кирилл эсвэл латин үсгээр) болон англиар, вэб эсвэл Facebook Messenger-ээр юу ч асуугаарай. Нэр, утасны дугаар, бүртгэл шаардахгүй.',
+    f2t: '"Шинжилгээ өгөх хэрэгтэй юу?"', f2d: 'Эмч нарын тогтоосон дүрэмд суурилсан 2 минутын нууц шалгалт: ямар шинжилгээ, хэр хурдан өгөх нь зүйтэйг санал болгоно. Онош биш. Хариултыг хэзээ ч хадгалахгүй.',
+    f3t: 'Үнэгүй эмнэлэг эхэнд', f3d: 'Эмнэлэг хайгч үргэлж үнэгүй төрийн үйлчилгээг эхэнд харуулна: өрхийн эрүүл мэндийн төв, БЗДХ-ын кабинет, өсвөр үеийнхэнд ээлтэй кабинет.',
+    f4t: 'Аюулгүй байдал нэгдүгээрт', f4d: 'Өөрийгөө гэмтээх, бэлгийн хүчирхийлэл, хүчирхийлэл эсвэл яаралтай байдлын тухай мессеж хиймэл оюунд хүрэхгүй. Яаралтай дугаартай, эмчийн баталсан тогтмол хариу авна.',
+    aTitle: 'Хиймэл оюун хэрхэн ажилладаг вэ',
+    aSub: 'Том хэлний загвар асуултыг ямар ч хэл, бичлэгээр ирсэн ойлгож, зөвхөн эмч нарын баталсан мэдээллээс хариулна. Онош тавихгүй, эм болон тунг хэзээ ч нэрлэхгүй.',
+    a1t: 'Асуулт', a1d: 'Монгол кирилл, латин эсвэл англиар, вэб болон Messenger-ээр.',
+    a2t: 'Аюулгүй байдлын шалгалт', a2d: 'Эрсдэлийн дохиог хамгийн түрүүнд шалгана. Таарвал яаралтай дугаартай тогтмол хариу өгнө.',
+    a3t: 'Баталгаатай хариулт', a3d: 'Загвар зөвхөн батлагдсан мэдлэгийн сангийн мэдээллийг ашиглаж, хяналтад зориулж дугаарыг нь заана.',
+    a4t: 'Дараагийн алхам', a4d: 'Хариулт бүр нууц шалгалт болон үнэгүй эмнэлгийн жагсаалтыг санал болгоно.',
+    a5t: 'Нэргүй өгөгдөл', a5d: 'Зөвхөн тоо хадгална: сэдэв, шалгалтын түвшин, таалагдсан эсэх. Мессежийн текстийг хэзээ ч хадгалахгүй.',
+    r1t: 'Эмчийн баталсан агуулга', r1d: 'Эх сурвалжтай 39 асуулт-хариулт. Ашиглалтад орохдоо зөвхөн батлагдсан мэдээллийг ашиглана.',
+    r2t: 'Хиймэл оюунгүйгээр ч ажиллана', r2d: 'Хиймэл оюун ажиллахгүй үед түлхүүр үгээр хамгийн ойр батлагдсан хариултыг өгдөг тул үйлчилгээ тасрахгүй.',
+    r3t: 'Хиймэл оюунтай судалгаа', r3d: 'Багийн хуудас тестерүүдийн саналыг хиймэл оюунаар сэдэвчлэн бүлэглэдэг; баг сэдэв бүрийг бодит саналтай тулгаж шалгана.',
+    eTitle: 'Нотолгоо ба сайжруулалт',
+    eSub: 'Бид туршиж, илэрсэн асуудал бүрийг ангилж (P0–P3, MoSCoW), засаад, дахин туршдаг. Энд зөвхөн бодит үр дүн харагдана; өгөгдөл бий болмогц мөр нэмэгдэнэ.',
+    status: { done: 'Хийсэн', in_progress: 'Явагдаж байна', planned: 'Төлөвлөсөн' },
+    participants: (n) => `n = ${n}`, details: 'Дэлгэрэнгүй',
+    iterTitle: 'Хувилбар бүрт юу өөрчилсөн бэ',
+    rmTitle: 'Ирэх 12 сар', rmSub: 'Туршсан прототипоос захиалсан болон өгсөн шинжилгээг бодитоор хэмжих туршилтын хөтөлбөр хүртэл.',
+    q1: '1–3 дугаар сар', q1a: 'Мэдлэгийн сангийн бүх хариултыг эмч нар хянаж батлах', q1b: 'Монгол хариултуудыг баг бичиж шалгах', q1c: 'Мэдээлэл хамгааллын үнэлгээ', q1d: 'Түнш эмнэлгүүдийг баталгаажуулах',
+    q2: '4–6 дугаар сар', q2a: 'Улаанбаатарын 2–3 эмнэлэгтэй туршилт', q2b: 'Meta-гийн хяналтаар Messenger сувгийг нээх', q2c: 'Шинжилгээний нэргүй сануулга',
+    q3: '7–9 дүгээр сар', q3a: 'Түнш эмнэлгээр захиалсан болон өгсөн шинжилгээг хэмжих', q3b: 'Эцэг эхэд зориулсан ХПВ вакцины хэсэг', q3c: 'Монгол дуут оролт',
+    q4: '10–12 дугаар сар', q4a: 'Аймгийн төвүүдэд өргөжүүлэх', q4b: 'Туршилтын үр дүн болон нээлттэй мэдлэгийн санг нийтлэх', q4c: 'Дижитал нийтийн бүтээгдэхүүний статуст хүсэлт гаргах',
+    osTitle: 'Нээлттэй код, нээлттэй агуулга', osSub: 'Код MIT лицензтэй. Мэдлэгийн сан CC BY 4.0 лицензтэй тул ямар ч эмнэлэг, улс дахин ашиглах боломжтой.',
+    disclaimer: 'Naiz эрүүл мэндийн ерөнхий мэдээлэл өгдөг бөгөөд эмчийн зөвлөгөө, онош биш. Яаралтай үед 103 руу залгаарай.',
+    updated: (d) => `Нотолгоог шинэчилсэн: ${d}`,
+    title: 'Naiz · Монгол залуу эмэгтэйчүүдийн нууц бэлгийн эрүүл мэндийн туслах',
+  },
+};
+
+let lang = 'en';
+let evidence = null;
+const REPO_DEFAULT = 'https://github.com/iceelyn/khatun-srhr';
+const BRANCH = 'main';
+
+function el(tag, props = {}, ...kids) {
+  const e = Object.assign(document.createElement(tag), props);
+  for (const k of kids.flat()) if (k != null) e.append(k);
+  return e;
+}
+const docUrl = (path) => `${(evidence && evidence.repo_url) || REPO_DEFAULT}/blob/${BRANCH}/${path}`;
+
+function renderEvidence() {
+  const t = T[lang];
+  const ev = evidence;
+  if (!ev) return;
+  document.getElementById('methods').replaceChildren(...ev.methods.map((m) => el('div', { className: 'method' },
+    el('span', { className: `badge ${m.status}` , textContent: t.status[m.status] || m.status }),
+    el('p', {}, m[lang], m.n ? el('strong', { textContent: ` (${t.participants(m.n)})` }) : null),
+    m.link ? el('a', { href: docUrl(m.link), textContent: t.details }) : el('span'))));
+  const shown = ev.metrics.filter((m) => m.value !== null && m.value !== '');
+  document.getElementById('metrics').replaceChildren(...shown.map((m) => el('div', { className: 'card metric' },
+    el('div', { className: 'num', textContent: m.value }), el('p', { textContent: m[lang] }))));
+  document.getElementById('quotes').replaceChildren(...(ev.quotes || []).map((q) => el('blockquote', {},
+    q[lang] || q.en, el('cite', { textContent: q[`who_${lang}`] || q.who_en || '' }))));
+  document.getElementById('timeline').replaceChildren(...(ev.iterations || []).map((it) => el('div', { className: 'card tl' },
+    el('div', { className: 'v' }, it.version, el('small', { textContent: it.date })), el('p', { textContent: it[lang] }))));
+  document.getElementById('updated').textContent = ev.updated ? t.updated(ev.updated) : '';
+  const tryLink = document.getElementById('tryLink');
+  if (ev.app_url) { tryLink.href = ev.app_url; tryLink.hidden = false; }
+}
+
+function render() {
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  document.title = t.title;
+  document.querySelectorAll('[data-t]').forEach((n) => { if (typeof t[n.dataset.t] === 'string') n.textContent = t[n.dataset.t]; });
+  document.querySelectorAll('[data-alt]').forEach((n) => { n.alt = t[n.dataset.alt]; });
+  document.querySelectorAll('.phones img').forEach((img, i) => { img.src = `img/${i ? 'check' : 'welcome'}-${lang}.png`; });
+  document.querySelectorAll('[data-lang]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+  document.querySelectorAll('.docLink').forEach((a) => { a.href = docUrl(a.dataset.path); });
+  renderEvidence();
+}
+
+document.querySelectorAll('[data-lang]').forEach((b) => b.addEventListener('click', () => {
+  lang = b.dataset.lang;
+  try { localStorage.setItem('naiz-site-lang', lang); } catch {}
+  render();
+}));
+try { const saved = localStorage.getItem('naiz-site-lang'); if (saved === 'mn' || saved === 'en') lang = saved; } catch {}
+if (new URLSearchParams(location.search).get('lang') === 'mn') lang = 'mn';
+
+fetch('evidence.json').then((r) => r.json()).then((d) => { evidence = d; render(); }).catch(() => render());
+render();
+</script>
+</body>
+</html>

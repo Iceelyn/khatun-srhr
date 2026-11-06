@@ -1,0 +1,18 @@
+{
+  "name": "naiz-srhr",
+  "version": "0.1.0",
+  "description": "Naiz: a private, doctor-backed sexual and reproductive health companion for young women in Mongolia (prototype).",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node --env-file=.env src/server.js",
+    "dev": "node src/server.js",
+    "test": "node --test test/*.test.js",
+    "eval": "node scripts/run-eval.js",
+    "survey": "node scripts/summarize-survey.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

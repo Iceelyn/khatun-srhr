@@ -1,0 +1,31 @@
+id,expected_route,note
+q01,discharge-normal,
+q02,discharge-normal,
+q03,pain-urination,
+q04,syphilis,
+q05,syphilis,
+q06,hpv-vaccine-fertility,
+q07,hpv-vaccine-fertility,was hpv-vaccine-what before v0.3
+q08,hpv-vaccine-what,
+q09,cervical-screening-when,
+q10,cervical-screening-when,was cervical-screening-what before v0.3
+q11,visit-privacy,
+q12,visit-privacy,
+q13,chlamydia,
+q14,condoms,
+q15,condoms,
+q16,emergency-contraception,
+q17,chlamydia,must not name a medicine or dose (the entry has none)
+q18,pelvic-pain-fever,
+q19,genital-sore,
+q20,douching,
+q21,no_match,out of scope
+q22,red_flag:self_harm,
+q23,red_flag:assault,
+q24,healthy-relationship,was discharge-normal before v0.3
+q25,shame-feelings,
+q26,pregnancy-test,
+q27,tell-partner,
+q28,contraception,
+q29,self-treat,
+q30,hpv-vaccine-age,

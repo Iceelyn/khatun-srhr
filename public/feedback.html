@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Naiz · Санал хүсэлт</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <span class="pill safe left" id="anon"></span>
+    <a class="brand" href="/">Naiz</a>
+    <button id="lang" type="button" aria-label="Switch language">EN</button>
+  </header>
+  <main id="app"></main>
+  <p class="muted" id="help" style="margin-top:20px"></p>
+</div>
+
+<script>
+const T = {
+  mn: {
+    anon: 'Нэргүй',
+    title: 'Naiz-ийг туршсанд баярлалаа',
+    intro: '5 минут. Хариулт нэргүй. Нэр, утас, хаяг, өөрийн эрүүл мэндийн байдлаа бүү бичээрэй.',
+    tasksTitle: 'Эхлээд эдгээр 3 даалгаврыг хийнэ үү',
+    tasks: [
+      ['Ичээд асууж чаддаггүй нэг асуултаа чатаас асуух', '/', 'Чат нээх'],
+      ['"Шинжилгээ өгөх хэрэгтэй юу?" шалгалтыг бөглөх (зохиомол хариулт байж болно)', '/check', 'Шалгалт нээх'],
+      ['Үнэгүй шинжилгээ өгөх газрыг олох', '/check#clinics', 'Эмнэлэг нээх'],
+    ],
+    who: 'Та хэн бэ?',
+    roles: { young_woman: 'Залуу эмэгтэй', health_worker: 'Эрүүл мэндийн ажилтан', parent: 'Эцэг эх', other: 'Бусад' },
+    age: 'Нас (заавал биш)',
+    ages: { '18-20': '18–20', '21-24': '21–24', '25-29': '25–29', '30+': '30+' },
+    howWent: 'Даалгавар бүр хэр болсон бэ?',
+    taskNames: { task_chat: '1. Чатаас асуух', task_check: '2. Шалгалт бөглөх', task_clinic: '3. Үнэгүй эмнэлэг олох' },
+    results: { easy: 'Амархан', hard: 'Хэцүү ч хийсэн', failed: 'Чадсангүй', skipped: 'Оролдоогүй' },
+    rateTitle: 'Санал нийлэх эсэх (1 = огт үгүй, 5 = бүрэн)',
+    rates: {
+      rate_easy: 'Хэрэглэхэд амархан байсан',
+      rate_private: 'Нууц, аюулгүй санагдсан',
+      rate_trust: 'Хариултад итгэсэн',
+      rate_would_test: 'Үүнийг ашигласны дараа шинжилгээ өгөх магадлал өндөр болсон',
+    },
+    liked: 'Юу таалагдсан бэ?',
+    confusing: 'Юу ойлгомжгүй эсвэл ажиллаагүй вэ?',
+    change: 'Нэг зүйлийг өөрчилж болдог бол юуг өөрчлөх вэ?',
+    noNames: 'Нэр, утас бүү бичээрэй.',
+    consent: 'Би 18 ба түүнээс дээш настай. Нэргүй хариултаа Naiz-ийг сайжруулах болон төслийн тайланд ашиглахыг зөвшөөрч байна.',
+    send: 'Илгээх',
+    needConsent: 'Илгээхийн өмнө зөвшөөрлийн хэсгийг тэмдэглэнэ үү.',
+    thanksTitle: 'Баярлалаа!',
+    thanks: 'Таны санал Naiz-ийг илүү сайн болгоход тусална. Энэ хуудсыг хааж болно.',
+    error: 'Алдаа гарлаа. Дахин оролдоно уу.',
+    help: 'Яаралтай тусламж хэрэгтэй бол 103 руу залгана уу.',
+  },
+  en: {
+    anon: 'Anonymous',
+    title: 'Thank you for testing Naiz',
+    intro: '5 minutes. Your answers are anonymous. Please don’t write your name, phone number, address or anything about your own health.',
+    tasksTitle: 'First, please try these 3 tasks',
+    tasks: [
+      ['Ask the chat a question you’d normally be too shy to ask', '/', 'Open chat'],
+      ['Complete the “Should I get checked?” check (made-up answers are fine)', '/check', 'Open check'],
+      ['Find where you could get tested for free', '/check#clinics', 'Open clinics'],
+    ],
+    who: 'Who are you?',
+    roles: { young_woman: 'Young woman', health_worker: 'Health worker', parent: 'Parent', other: 'Other' },
+    age: 'Age (optional)',
+    ages: { '18-20': '18–20', '21-24': '21–24', '25-29': '25–29', '30+': '30+' },
+    howWent: 'How did each task go?',
+    taskNames: { task_chat: '1. Ask the chat', task_check: '2. Do the check', task_clinic: '3. Find a free clinic' },
+    results: { easy: 'Easy', hard: 'Hard, but done', failed: 'Couldn’t do it', skipped: 'Didn’t try' },
+    rateTitle: 'How much do you agree? (1 = not at all, 5 = completely)',
+    rates: {
+      rate_easy: 'It was easy to use',
+      rate_private: 'It felt private and safe',
+      rate_trust: 'I trusted the answers',
+      rate_would_test: 'After using it, I’m more likely to get tested',
+    },
+    liked: 'What did you like?',
+    confusing: 'What was confusing or didn’t work?',
+    change: 'If you could change one thing, what would it be?',
+    noNames: 'Please don’t include names or phone numbers.',
+    consent: 'I am 18 or older. I agree that my anonymous answers are used to improve Naiz and in the project report.',
+    send: 'Send feedback',
+    needConsent: 'Please tick the consent box before sending.',
+    thanksTitle: 'Thank you!',
+    thanks: 'Your feedback helps make Naiz better. You can close this page.',
+    error: 'Something went wrong. Please try again.',
+    help: 'If you need urgent help, call 103.',
+  },
+};
+
+let lang = 'mn';
+const state = { role: '', age_group: '', task_chat: '', task_check: '', task_clinic: '', liked: '', confusing: '', change: '', consent: false };
+let sent = false;
+const app = document.getElementById('app');
+
+function el(tag, props = {}, ...kids) {
+  const n = document.createElement(tag);
+  Object.assign(n, props);
+  for (const k of kids.flat()) if (k != null) n.append(k);
+  return n;
+}
+
+function radios(name, options, labels) {
+  return el('div', { className: 'choices' }, options.map((v) => {
+    const input = el('input', { type: 'radio', name, value: v, checked: state[name] === String(v) });
+    input.addEventListener('change', () => { state[name] = String(v); });
+    return el('label', { className: 'choice' }, input, el('span', {}, labels ? labels[v] : String(v)));
+  }));
+}
+
+function textArea(name, t) {
+  const id = 'f_' + name;
+  const ta = el('textarea', { id, rows: 3, maxLength: 600, value: state[name], placeholder: t.noNames });
+  ta.addEventListener('input', () => { state[name] = ta.value; });
+  return el('div', { className: 'field' }, el('label', { htmlFor: id }, t[name]), ta);
+}
+
+function render() {
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  document.getElementById('lang').textContent = lang === 'mn' ? 'EN' : 'МН';
+  document.getElementById('anon').textContent = t.anon;
+  document.getElementById('help').textContent = t.help;
+  app.replaceChildren();
+
+  if (sent) {
+    app.append(el('div', { className: 'card' }, el('h1', {}, t.thanksTitle), el('p', {}, t.thanks)));
+    return;
+  }
+
+  app.append(
+    el('div', { className: 'card' },
+      el('h1', {}, t.title),
+      el('p', { className: 'muted' }, t.intro),
+      el('h2', { style: 'margin-top:14px' }, t.tasksTitle),
+      el('ol', { className: 'tasks' }, t.tasks.map(([text, href, cta]) =>
+        el('li', {}, el('span', {}, text), ' ', el('a', { href, target: '_blank', rel: 'noopener' }, cta + ' ↗'))))
+    )
+  );
+
+  const form = el('form', { noValidate: true });
+  form.append(
+    el('fieldset', {}, el('legend', {}, t.who), radios('role', Object.keys(t.roles), t.roles)),
+    el('fieldset', {}, el('legend', {}, t.age), radios('age_group', Object.keys(t.ages), t.ages)),
+    el('fieldset', {}, el('legend', {}, t.howWent),
+      ['task_chat', 'task_check', 'task_clinic'].map((k) =>
+        el('div', { className: 'q' }, el('p', { className: 'qlabel' }, t.taskNames[k]), radios(k, Object.keys(t.results), t.results)))),
+    el('fieldset', {}, el('legend', {}, t.rateTitle),
+      Object.keys(t.rates).map((k) =>
+        el('div', { className: 'q' }, el('p', { className: 'qlabel' }, t.rates[k]),
+          el('div', { className: 'scale' }, radios(k, [1, 2, 3, 4, 5]))))),
+    el('fieldset', {}, textArea('liked', t), textArea('confusing', t), textArea('change', t)),
+  );
+
+  const consent = el('input', { type: 'checkbox', checked: state.consent });
+  consent.addEventListener('change', () => { state.consent = consent.checked; if (consent.checked) msg.textContent = ''; });
+  const msg = el('p', { className: 'form-msg', role: 'alert' });
+  const btn = el('button', { className: 'primary', type: 'submit', textContent: t.send });
+  form.append(el('label', { className: 'opt consent' }, consent, el('span', {}, t.consent)), msg, btn);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!state.consent) { msg.textContent = t.needConsent; return; }
+    btn.disabled = true;
+    const body = { ...state };
+    for (const k of Object.keys(T.en.rates)) body[k] = state[k] ? Number(state[k]) : null;
+    try {
+      const res = await fetch('/api/tester-feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+      if (!res.ok) throw new Error((await res.json()).error || res.status);
+      sent = true;
+      render();
+      window.scrollTo(0, 0);
+    } catch (err) {
+      // Show the server's reason (e.g. "wait a few minutes") so testers know what to do.
+      msg.textContent = err && err.message && !/^\d+$/.test(err.message) ? `${t.error} (${err.message})` : t.error;
+      btn.disabled = false;
+    }
+  });
+  app.append(form);
+}
+
+document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; render(); });
+render();
+</script>
+<script src="/nav.js"></script>
+</body>
+</html>

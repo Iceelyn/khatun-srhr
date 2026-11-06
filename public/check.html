@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Naiz · Нууц шалгалт</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <span class="pill safe left" id="anon"></span>
+    <a class="brand" href="/">Naiz</a>
+    <button id="lang" type="button" aria-label="Switch language">EN</button>
+  </header>
+
+  <div class="card hero" id="hero">
+    <span class="eyebrow" id="eyebrow"></span>
+    <h1 id="title"></h1>
+    <p class="muted" id="subtitle"></p>
+  </div>
+
+  <form id="form"></form>
+  <section id="resultView" hidden aria-labelledby="result-title">
+    <div class="stepper" aria-hidden="true"><span class="done" id="stepCheck"></span><span class="line"></span><span class="current" id="stepResult"></span></div>
+    <button type="button" class="ghost back" id="back"></button>
+    <h1 id="result-title" tabindex="-1"></h1>
+    <div id="result" aria-live="polite"></div>
+  </section>
+  <div id="clinics"></div>
+</div>
+
+<script>
+// Answers stay in this page and are sent once for the result. They are not stored on the server.
+const T = {
+  mn: {
+    anon: 'Нэргүй', eyebrow: 'Хариулт хадгалагдахгүй', title: 'Шинжилгээ өгөх хэрэгтэй юу?',
+    subtitle: '2 минутын нууц шалгалт. Нэр шаардахгүй, хариултыг хадгалахгүй.',
+    age: 'Таны нас', everSex: 'Та бэлгийн харьцаанд орж байсан уу?',
+    yes: 'Тийм', no: 'Үгүй', notSure: 'Мэдэхгүй', prefer: 'Хэлэхийг хүсэхгүй байна',
+    symptoms: 'Сүүлийн үед эдгээрийн аль нь илэрсэн бэ?',
+    s: {
+      discharge_change: 'Үтрээний ялгадас өөрчлөгдсөн (өнгө, үнэр, хэмжээ)', itching: 'Загатнах, түлэгдэх мэдрэмж',
+      pain_urination: 'Шээхэд хорсох, өвдөх', pain_sex: 'Бэлгийн харьцааны үед өвдөх', pelvic_pain: 'Хэвлийн доод хэсгээр өвдөх',
+      genital_sore: 'Бэлэг эрхтэн дээр шарх, цэврүү, товойлт', bleeding_between: 'Сарын тэмдэг хооронд цус гарах',
+      bleeding_after_sex: 'Бэлгийн харьцааны дараа цус гарах',
+    },
+    now: 'Яг одоо эдгээр байна уу?', fever: 'Халуурч байна', severePain: 'Маш хүчтэй өвдөж байна', heavyBleeding: 'Их хэмжээгээр цус алдаж байна',
+    maybePregnant: 'Жирэмсэн байх магадлалтай юу?',
+    newPartner: 'Сүүлийн 3 сард шинэ хамтрагчтай бэлгэвчгүй харьцаанд орсон уу?',
+    partnerSTI: 'Хамтрагч тань БЗДХ-тай гэж хэлж байсан уу?',
+    lastTest: 'Хамгийн сүүлд хэзээ БЗДХ-ын шинжилгээ өгсөн бэ?', never: 'Хэзээ ч өгөөгүй', over1y: '1 жилээс өмнө', within1y: 'Сүүлийн 1 жилд',
+    lastScreening: 'Умайн хүзүүний үзлэг (Пап шинжилгээ) хамгийн сүүлд хэзээ хийлгэсэн бэ?', over3y: '3 жилээс өмнө', within3y: 'Сүүлийн 3 жилд', unknown: 'Мэдэхгүй',
+    assault: 'Сүүлийн 5 хоногт хэн нэгэн таныг хүсээгүй байхад бэлгийн харьцаанд оруулсан уу?',
+    submit: 'Үр дүнг харах',
+    level: {
+      today: ['Өнөөдөр эмчид үзүүлээрэй', 'Таны хариултаас харахад өнөөдөр эмчид үзүүлэх нь зүйтэй. Хүнд байвал 103 руу залгаарай.'],
+      soon: ['Ойрын хэдэн хоногт шинжилгээ өгөөрэй', 'Шинж тэмдэг илэрсэн тул шинжилгээгээр шалтгааныг тодорхойлох хэрэгтэй. Ихэнх нь энгийн эмчилгээгээр эдгэрдэг.'],
+      routine: ['Шинжилгээ өгөх нь зүйтэй', 'Одоогоор яаралтай зүйл алга, гэхдээ товлон шинжилгээ өгөх нь таны эрүүл мэндийг хамгаална.'],
+      none: ['Одоогоор шинжилгээ шаардлагагүй бололтой', 'Асуух зүйл гарвал бидэнд бичээрэй.'],
+    },
+    testsTitle: 'Юу хүсэх вэ',
+    tests: {
+      swab: 'Арчдасны шинжилгээ: хламиди, заг хүйтэн, трихомониаз', blood: 'Цусны шинжилгээ: тэмбүү, ХДХВ', exam: 'Эмчийн үзлэг',
+      cervical_screening: 'Умайн хүзүүний үзлэг (Пап эсвэл ХПВ шинжилгээ), 30–60 насны эмэгтэйчүүдэд үнэгүй', pregnancy_test: 'Жирэмсний тест',
+      emergency_care: 'Яаралтай тусламж: жирэмслэлт болон ХДХВ-ээс урьдчилан сэргийлэх',
+    },
+    assaultMsg: 'Таны буруу биш. Аль болох хурдан эмнэлэгт эсвэл Нэг цэгийн үйлчилгээний төвд хандаарай. 72 цагийн дотор хандвал жирэмслэлт болон ХДХВ-ээс урьдчилан сэргийлэх боломжтой. Аюулд байгаа бол 102.',
+    youth: '18-аас доош настай бол Өсвөр үеийнхэнд ээлтэй кабинетад үнэгүй, нууцлалтай зөвлөгөө авах боломжтой.',
+    disclaimer: 'Энэ бол онош биш. Зөвхөн шинжилгээ л баттай хариу өгнө.',
+    stepCheck: 'Шалгалт', stepResult: 'Үр дүн', resultTitle: 'Таны үр дүн', back: '← Хариултаа засах', restart: 'Шалгалтыг дахин эхлэх',
+    openChat: 'Нууц чат нээх →', nextTitle: 'Дараагийн алхам', step1: 'Эмчээс эдгээрийг хүсээрэй', step2: 'Хаана очих вэ', step3: 'Асуулт байна уу?',
+    clinicsTitle: 'Хаана шинжилгээ өгөх вэ', website: 'Вэбсайт', callFirst: 'Очихоосоо өмнө утсаар цаг, үнээ лавлаарай. Үнэгүй төрийн үйлчилгээ эхэнд, дараа нь хувийн эмнэлгүүд.', free: 'Үнэгүй', partner: 'Хувийн эмнэлэг (төлбөртэй)', chat: 'Асуулт байна уу? Бидэнтэй чатлаарай',
+  },
+  en: {
+    anon: 'Anonymous', eyebrow: 'Nothing is saved', title: 'Should I get checked?',
+    subtitle: "A 2-minute private check. No name needed, and your answers aren't saved.",
+    age: 'Your age', everSex: 'Have you ever had sex?',
+    yes: 'Yes', no: 'No', notSure: 'Not sure', prefer: "I'd rather not say",
+    symptoms: 'Have you noticed any of these recently?',
+    s: {
+      discharge_change: 'Change in discharge (colour, smell, amount)', itching: 'Itching or burning',
+      pain_urination: 'Burning or pain when peeing', pain_sex: 'Pain during sex', pelvic_pain: 'Pain low in the belly',
+      genital_sore: 'Sore, blister or lump on the genitals', bleeding_between: 'Bleeding between periods',
+      bleeding_after_sex: 'Bleeding after sex',
+    },
+    now: 'Right now, do you have any of these?', fever: 'Fever', severePain: 'Very strong pain', heavyBleeding: 'Heavy bleeding',
+    maybePregnant: 'Could you be pregnant?',
+    newPartner: 'In the last 3 months, have you had sex with a new partner without a condom?',
+    partnerSTI: 'Has a partner told you they have an STI?',
+    lastTest: 'When were you last tested for STIs?', never: 'Never', over1y: 'More than a year ago', within1y: 'Within the last year',
+    lastScreening: 'When did you last have cervical screening (Pap test)?', over3y: 'More than 3 years ago', within3y: 'Within 3 years', unknown: "I don't know",
+    assault: "In the last 5 days, has anyone made you have sex when you didn't want to?",
+    submit: 'See my result',
+    level: {
+      today: ['See a doctor today', 'From your answers, you should see a doctor today. If it feels serious, call 103.'],
+      soon: ['Get tested in the next few days', 'You have symptoms, so a test will find the cause. Most causes are easy to treat.'],
+      routine: ['A check is a good idea', 'Nothing urgent, but booking a test protects your health.'],
+      none: ["You don't seem to need a test right now", 'Message us any time you have a question.'],
+    },
+    testsTitle: 'What to ask for',
+    tests: {
+      swab: 'Swab test: chlamydia, gonorrhoea, trichomoniasis', blood: 'Blood test: syphilis, HIV', exam: 'An exam by a doctor',
+      cervical_screening: 'Cervical screening (Pap or HPV test), free for women aged 30–60', pregnancy_test: 'Pregnancy test',
+      emergency_care: 'Urgent care to prevent pregnancy and HIV',
+    },
+    assaultMsg: "This is not your fault. Please go to a hospital or a One-Stop Service Center as soon as you can. Within 72 hours, doctors can help prevent pregnancy and HIV. If you're in danger, call 102.",
+    youth: "If you're under 18, adolescent-friendly health rooms give free, confidential advice.",
+    disclaimer: "This isn't a diagnosis. Only a test can tell.",
+    stepCheck: 'Check', stepResult: 'Result', resultTitle: 'Your result', back: '← Change my answers', restart: 'Start the check again',
+    openChat: 'Open the private chat →', nextTitle: 'Next steps', step1: 'Ask the doctor for', step2: 'Where to go', step3: 'Questions?',
+    clinicsTitle: 'Where to get tested', website: 'Website', callFirst: 'Call before you go to check hours and prices. Free public services first, then private clinics.', free: 'Free', partner: 'Private clinic (paid)', chat: 'Questions? Chat with us',
+  },
+};
+
+let lang = 'mn';
+const form = document.getElementById('form');
+const el = (tag, props = {}, ...kids) => {
+  const n = Object.assign(document.createElement(tag), props);
+  n.append(...kids.filter((k) => k != null));
+  return n;
+};
+
+function radioGroup(name, legend, options) {
+  const fs = el('fieldset', {}, el('legend', { textContent: legend }));
+  for (const [value, label] of options) {
+    const input = el('input', { type: 'radio', name, value });
+    fs.append(el('label', { className: 'opt' }, input, el('span', { textContent: label })));
+  }
+  return fs;
+}
+function checkGroup(name, legend, options) {
+  const fs = el('fieldset', {}, el('legend', { textContent: legend }));
+  for (const [value, label] of options) {
+    const input = el('input', { type: 'checkbox', name, value });
+    fs.append(el('label', { className: 'opt' }, input, el('span', { textContent: label })));
+  }
+  return fs;
+}
+
+function renderForm() {
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  for (const id of ['anon', 'eyebrow', 'title', 'subtitle']) document.getElementById(id).textContent = t[id];
+  document.getElementById('lang').textContent = lang === 'mn' ? 'EN' : 'МН';
+
+  const age = el('fieldset', {}, el('legend', { textContent: t.age }));
+  const ageInput = el('input', { type: 'number', name: 'age', min: 12, max: 80, required: true, id: 'age' });
+  age.append(el('label', { htmlFor: 'age', className: 'sr-only', textContent: t.age }), ageInput);
+
+  const yn = [['yes', t.yes], ['no', t.no], ['prefer', t.prefer]];
+  const screening = radioGroup('lastScreening', t.lastScreening, [['never', t.never], ['over3y', t.over3y], ['within3y', t.within3y], ['unknown', t.unknown]]);
+  screening.hidden = true;
+  ageInput.addEventListener('input', () => { const a = Number(ageInput.value); screening.hidden = !(a >= 30 && a <= 60); });
+
+  form.replaceChildren(
+    age,
+    radioGroup('everSex', t.everSex, yn),
+    checkGroup('symptoms', t.symptoms, Object.entries(t.s)),
+    checkGroup('now', t.now, [['fever', t.fever], ['severePain', t.severePain], ['heavyBleeding', t.heavyBleeding]]),
+    radioGroup('maybePregnant', t.maybePregnant, [['yes', t.yes], ['no', t.no], ['notSure', t.notSure]]),
+    radioGroup('newPartnerNoCondom', t.newPartner, yn),
+    radioGroup('partnerHasSTI', t.partnerSTI, [['yes', t.yes], ['no', t.no], ['notSure', t.notSure]]),
+    radioGroup('lastSTITest', t.lastTest, [['never', t.never], ['over1y', t.over1y], ['within1y', t.within1y]]),
+    screening,
+    radioGroup('assault', t.assault, yn),
+    el('button', { type: 'submit', className: 'primary', textContent: t.submit, style: 'width:100%;margin-bottom:16px' }),
+  );
+}
+
+function collect() {
+  const fd = new FormData(form);
+  const v = (k) => fd.get(k);
+  const now = fd.getAll('now');
+  return {
+    age: Number(v('age')),
+    sexuallyActive: v('everSex') === 'yes',
+    symptoms: fd.getAll('symptoms'),
+    fever: now.includes('fever'),
+    severePain: now.includes('severePain'),
+    heavyBleeding: now.includes('heavyBleeding'),
+    maybePregnant: ['yes', 'notSure'].includes(v('maybePregnant')),
+    newPartnerNoCondom: v('newPartnerNoCondom') === 'yes',
+    partnerHasSTI: v('partnerHasSTI') === 'yes',
+    lastSTITest: v('lastSTITest') || 'never',
+    lastScreening: v('lastScreening') || 'unknown',
+    assault: v('assault') === 'yes',
+  };
+}
+
+// The result is its own screen: the questions are hidden, the result starts at the top,
+// and Back (button or browser) returns to the answers, which are kept.
+let lastResult = null;
+
+function setView(view) {
+  const result = view === 'result';
+  document.getElementById('hero').hidden = result;
+  form.hidden = result;
+  document.getElementById('resultView').hidden = !result;
+  if (!result) document.getElementById('clinics').replaceChildren();
+}
+
+function showResult(r, { push = true } = {}) {
+  lastResult = r;
+  const t = T[lang];
+  const [head, body] = t.level[r.level];
+  document.getElementById('stepCheck').textContent = '✓ ' + t.stepCheck;
+  document.getElementById('stepResult').textContent = t.stepResult;
+  document.getElementById('back').textContent = t.back;
+  document.getElementById('result-title').textContent = t.resultTitle;
+  const box = el('div', { className: `alert big ${r.level}` }, el('h2', { textContent: head }), el('p', { textContent: r.special === 'assault' ? t.assaultMsg : body, style: 'margin:0' }));
+  const parts = [box];
+  if (r.youth) parts.push(el('div', { className: 'alert routine', textContent: t.youth }));
+  parts.push(el('div', { className: 'section-title' }, el('h2', { textContent: t.nextTitle })));
+  let n = 0;
+  const step = (title, ...body) => el('div', { className: 'card next-step' }, el('span', { className: 'num', textContent: String(++n) }), el('div', {}, el('h3', { textContent: title }), ...body));
+  if (r.tests.length) parts.push(step(t.step1, el('ul', {}, ...r.tests.map((x) => el('li', { textContent: t.tests[x] || x })))));
+  parts.push(step(t.step2, el('p', {}, el('a', { className: 'link', href: '#clinics-title', textContent: t.clinicsTitle + ' ↓' }))));
+  parts.push(step(t.step3, el('p', {}, el('a', { className: 'link', href: '/', textContent: t.openChat }))));
+  parts.push(el('p', { className: 'muted', textContent: t.disclaimer }));
+  document.getElementById('result').replaceChildren(...parts);
+  setView('result');
+  if (push && history.state?.view !== 'result') history.pushState({ view: 'result' }, '', location.pathname);
+  showClinics().then(() => document.getElementById('clinics').append(
+    el('button', { type: 'button', className: 'btn block', textContent: t.restart, style: 'margin:8px 0 16px', onclick: restart })));
+  window.scrollTo(0, 0);
+  document.getElementById('result-title').focus({ preventScroll: true });
+}
+
+function backToForm() {
+  setView('form');
+  window.scrollTo(0, 0);
+}
+
+function restart() {
+  form.reset();
+  renderForm();
+  lastResult = null;
+  if (history.state?.view === 'result') history.back(); else backToForm();
+}
+
+document.getElementById('back').addEventListener('click', () => (history.state?.view === 'result' ? history.back() : backToForm()));
+window.addEventListener('popstate', () => { if (history.state?.view === 'result' && lastResult) showResult(lastResult, { push: false }); else backToForm(); });
+
+async function showClinics() {
+  const t = T[lang];
+  const list = await (await fetch('/api/clinics')).json();
+  const cards = list.map((c) =>
+    el('div', { className: 'card' },
+      el('h2', { textContent: c.name }),
+      el('span', { className: `tag ${c.free ? 'free' : 'paid'}`, textContent: c.free ? t.free : t.partner }),
+      el('p', { className: 'muted', textContent: c.services.join(' · ') }),
+      el('p', { className: 'muted', textContent: [c.address, c.hours, c.phone].filter(Boolean).join(' · ') }),
+      c.website ? el('p', { className: 'muted' }, el('a', { href: c.website, target: '_blank', rel: 'noopener', className: 'link', textContent: t.website })) : null));
+  document.getElementById('clinics').replaceChildren(el('div', { className: 'section-title' }, el('h2', { id: 'clinics-title', textContent: t.clinicsTitle })), el('p', { className: 'muted', textContent: t.callFirst }), ...cards);
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const res = await fetch('/api/check', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(collect()) });
+  showResult(await res.json());
+});
+document.getElementById('lang').addEventListener('click', () => {
+  lang = lang === 'mn' ? 'en' : 'mn';
+  const answers = new FormData(form);
+  renderForm();
+  for (const [k, v] of answers) { // keep answers when switching language
+    const input = form.querySelector(`[name="${k}"][value="${CSS.escape(String(v))}"]`) || form.querySelector(`[name="${k}"]:not([type=radio]):not([type=checkbox])`);
+    if (!input) continue;
+    if (input.type === 'radio' || input.type === 'checkbox') input.checked = true; else { input.value = v; input.dispatchEvent(new Event('input')); }
+  }
+  if (!document.getElementById('resultView').hidden && lastResult) showResult(lastResult, { push: false });
+  else document.getElementById('clinics').replaceChildren();
+});
+renderForm();
+async function openClinicsFromHash() {
+  if (location.hash !== '#clinics') return;
+  await showClinics();
+  document.getElementById('clinics').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.addEventListener('hashchange', openClinicsFromHash);
+openClinicsFromHash();
+</script>
+<script src="/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Naiz · Team results</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="wrap wide">
+  <header class="bar">
+    <a class="brand" href="/" style="grid-column:1;justify-self:start">Naiz</a>
+    <span class="pill safe">Team only</span>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+// Team results page: reads the database through token-protected APIs.
+// The token is kept only for this browser tab (sessionStorage).
+
+const LABELS = {
+  role: { young_woman: 'Young woman', health_worker: 'Health worker', parent: 'Parent', other: 'Other', none: 'Not given' },
+  task: { task_chat: 'Ask the chat', task_check: 'Do the check', task_clinic: 'Find a free clinic' },
+  result: { easy: 'Easy', hard: 'Hard, done', failed: 'Failed', skipped: 'Didn’t try' },
+  rate: { rate_easy: 'Easy to use', rate_private: 'Felt private', rate_trust: 'Trusted the answers', rate_would_test: 'More likely to get tested' },
+  category: { '': 'Category…', bug: 'Bug', usability: 'Usability', missing_feature: 'Missing feature', enhancement: 'Enhancement', positive: 'Positive', not_actionable: 'Not actionable' },
+  priority: { '': 'Priority…', P0: 'P0 blocker', P1: 'P1 major', P2: 'P2 minor', P3: 'P3 cosmetic' },
+  moscow: { '': 'MoSCoW…', must: 'Must', should: 'Should', could: 'Could', wont: 'Won’t' },
+  status: { new: 'New', planned: 'Planned', fixed: 'Fixed', wont_fix: 'Won’t fix' },
+  grp: { young_woman: 'Young woman', health_worker: 'Health worker', parent: 'Parent' },
+  method: { in_person: 'In person', phone: 'Phone', online: 'Online' },
+  level: { none: 'No test needed', routine: 'Routine test', soon: 'Within days', today: 'Today' },
+};
+
+let token = '';
+try { token = sessionStorage.getItem('naizTeamToken') || ''; } catch {}
+let tab = 'overview';
+let data = { overview: null, feedback: [], interviews: [] };
+let filter = { status: 'open', priority: '' };
+const app = document.getElementById('app');
+
+function el(tag, props = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === 'style') n.style.cssText = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else n[k] = v;
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) n.append(k);
+  return n;
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(path, { ...opts, headers: { 'x-team-token': token, 'content-type': 'application/json', ...(opts.headers || {}) } });
+  if (!res.ok) {
+    let msg = res.status;
+    let detail = '';
+    try { const j = await res.json(); msg = j.error || msg; detail = j.detail || ''; } catch {}
+    const err = new Error(msg); err.status = res.status; err.detail = detail; throw err;
+  }
+  return res;
+}
+
+async function load() {
+  const [o, f, i] = await Promise.all([
+    api('/api/team/overview').then((r) => r.json()),
+    api('/api/team/feedback').then((r) => r.json()),
+    api('/api/team/interviews').then((r) => r.json()),
+  ]);
+  data = { overview: o, feedback: f, interviews: i };
+}
+
+// ---- login --------------------------------------------------------------
+
+function renderLogin(error) {
+  const input = el('input', { type: 'password', id: 'tok', autocomplete: 'current-password', className: 'text' });
+  app.replaceChildren(el('div', { className: 'card', style: 'max-width:420px' },
+    el('h1', {}, 'Team results'),
+    el('p', { className: 'muted' }, 'Enter the team token (TEAM_TOKEN on the server).'),
+    el('form', { onsubmit: async (e) => {
+      e.preventDefault();
+      token = input.value.trim();
+      try { sessionStorage.setItem('naizTeamToken', token); } catch {}
+      start();
+    } },
+      el('label', { htmlFor: 'tok' }, 'Team token'), input,
+      error ? el('p', { className: 'form-msg', role: 'alert' }, error) : null,
+      el('p', {}, el('button', { className: 'primary', type: 'submit' }, 'Open results')))
+  ));
+  input.focus();
+}
+
+async function start() {
+  if (!token) return renderLogin();
+  app.replaceChildren(el('p', { className: 'muted' }, 'Loading…'));
+  try {
+    await load();
+    render();
+  } catch (e) {
+    if (e.status === 403 || e.status === 503) {
+      try { sessionStorage.removeItem('naizTeamToken'); } catch {}
+      token = '';
+      renderLogin(String(e.message));
+    } else app.replaceChildren(
+      el('p', { className: 'form-msg' }, 'Could not load: ' + e.message),
+      e.detail ? el('p', { className: 'muted' }, 'Technical detail (send this to whoever set up the server): ', el('code', {}, e.detail)) : null);
+  }
+}
+
+// ---- shared bits ---------------------------------------------------------
+
+const pct = (n, d) => (d ? Math.round((n / d) * 100) : 0);
+
+function tile(label, value, sub) {
+  return el('div', { className: 'tile' }, el('div', { className: 'tile-label' }, label), el('div', { className: 'tile-value' }, String(value)), sub ? el('div', { className: 'tile-sub' }, sub) : null);
+}
+
+// One horizontal bar per row: label, bar (single colour), value text.
+function bars(rows) {
+  return el('div', { className: 'bars' }, rows.map((r) =>
+    el('div', { className: 'bar-row', title: `${r.label}: ${r.value}` },
+      el('div', { className: 'bar-label' }, r.label),
+      el('div', { className: 'bar-track' }, el('div', { className: 'bar-fill', style: `width:${Math.max(0, Math.min(100, r.pct || 0))}%` })),
+      el('div', { className: 'bar-value' }, r.value))));
+}
+
+function empty(text) {
+  return el('p', { className: 'empty' }, text);
+}
+
+async function download(kind) {
+  const res = await api(`/api/team/export/${kind}.csv`);
+  const blob = await res.blob();
+  const a = el('a', { href: URL.createObjectURL(blob), download: `naiz-${kind}-${new Date().toISOString().slice(0, 10)}.csv` });
+  document.body.append(a); a.click(); a.remove();
+}
+
+function select(options, value, onchange, label) {
+  const s = el('select', { 'aria-label': label, onchange: (e) => onchange(e.target.value) },
+    Object.entries(options).map(([v, t]) => el('option', { value: v, selected: v === value }, t)));
+  s.setAttribute('aria-label', label);
+  return s;
+}
+
+// ---- tabs ----------------------------------------------------------------
+
+const TABS = [['overview', 'Overview'], ['feedback', 'Tester feedback'], ['interviews', 'Interviews'], ['survey', 'Survey'], ['analyze', 'AI analysis']];
+
+function render() {
+  const nav = el('nav', { className: 'tabs', role: 'tablist' }, TABS.map(([id, name]) =>
+    el('button', { type: 'button', role: 'tab', className: id === tab ? 'active' : '', ariaSelected: String(id === tab), onclick: () => { tab = id; render(); } }, name)));
+  const body = { overview: viewOverview, feedback: viewFeedback, interviews: viewInterviews, survey: viewSurvey, analyze: viewAnalyze }[tab]();
+  const o = data.overview;
+  const warn = o.storage === 'file'
+    ? el('div', { className: 'alert soon' }, 'Storage: local files on the server. Free hosting wipes these on restart. Connect Supabase (see db/schema.sql) or export CSV after every test session.')
+    : null;
+  app.replaceChildren(
+    el('div', { className: 'toolbar' }, el('h1', {}, 'Team results'), el('button', { type: 'button', onclick: start }, 'Refresh')),
+    ...[warn, nav, body].filter(Boolean));
+}
+
+function viewOverview() {
+  const o = data.overview;
+  const f = o.feedback;
+  const u = o.usage;
+  const small = f.n > 0 && f.n < 10;
+  const ratingRows = Object.entries(f.ratings).map(([k, r]) => ({
+    label: LABELS.rate[k], pct: r.top2_pct, value: r.n ? `${r.top2} of ${r.n} chose 4–5 (${r.top2_pct}%) · avg ${r.mean}` : 'no answers yet',
+  }));
+  const taskRows = Object.entries(f.tasks).map(([k, t]) => ({
+    label: LABELS.task[k], pct: t.success_pct, value: t.tried ? `${t.easy + t.hard} of ${t.tried} done (${t.success_pct}%) · ${t.easy} easy, ${t.hard} hard, ${t.failed} failed` : 'no attempts yet',
+  }));
+  const topicTotal = Object.values(u.topics).reduce((a, b) => a + b, 0);
+  const topicRows = Object.entries(u.topics).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, v]) => ({ label: k, pct: pct(v, topicTotal), value: String(v) }));
+  const levelRows = ['none', 'routine', 'soon', 'today'].filter((k) => u.check_levels[k]).map((k) => ({ label: LABELS.level[k], pct: pct(u.check_levels[k], u.checks), value: `${u.check_levels[k]} (${pct(u.check_levels[k], u.checks)}%)` }));
+  const fbTotal = u.feedback.helpful + u.feedback.not_helpful;
+  const redFlags = Object.values(u.red_flags).reduce((a, b) => a + b, 0);
+
+  return el('div', {},
+    el('div', { className: 'tiles' },
+      tile('Testers', f.n, Object.entries(f.roles).map(([k, v]) => `${v} ${LABELS.role[k] || k}`).join(', ') || 'none yet'),
+      tile('Interviews', o.interviews.n, Object.entries(o.interviews.by_group).map(([k, v]) => `${v} ${LABELS.grp[k] || k}`).join(', ') || 'none yet'),
+      tile('Survey responses', o.survey ? o.survey.respondents : '—', o.survey ? 'from survey-summary.json' : 'run npm run survey'),
+      tile('Questions asked', u.questions, `${redFlags} safety replies`),
+      tile('Checks done', u.checks),
+      tile('Open P0/P1 issues', f.open_p0_p1, 'from triage')),
+    small ? el("p", { className: "alert soon" }, `Small sample (${f.n} tester${f.n === 1 ? "" : "s"}). In the application, write "X of ${f.n}" rather than percentages alone.`) : null,
+    el('section', { className: 'card' }, el('h2', {}, 'Prototype ratings'), el('p', { className: 'muted' }, 'Share of testers who chose 4 or 5 out of 5.'),
+      f.n ? bars(ratingRows) : empty('No tester feedback yet. Share /feedback with testers after they try the prototype.')),
+    el('section', { className: 'card' }, el('h2', {}, 'Task success'), el('p', { className: 'muted' }, 'Of testers who tried each task, how many completed it.'),
+      f.n ? bars(taskRows) : empty('No tester feedback yet.')),
+    el('section', { className: 'card' }, el('h2', {}, 'Chat and check usage'),
+      el('p', { className: 'muted' }, `Answer thumbs: ${u.feedback.helpful} helpful, ${u.feedback.not_helpful} not helpful${fbTotal ? ` (${pct(u.feedback.helpful, fbTotal)}% helpful)` : ''}. Counts only: no message text is stored.`),
+      el('h3', {}, 'Top question topics'), topicRows.length ? bars(topicRows) : empty('No questions yet.'),
+      el('h3', {}, 'Check results'), levelRows.length ? bars(levelRows) : empty('No checks yet.')),
+    el('section', { className: 'card' }, el('h2', {}, 'Copy into research/03-findings.md'),
+      el('p', { className: 'muted' }, 'Real numbers from the database, ready to paste. Check them before you use them.'),
+      el('pre', { className: 'snippet' }, findingsSnippet())));
+}
+
+function findingsSnippet() {
+  const { feedback: f, usage: u, interviews: iv } = data.overview;
+  const r = f.ratings;
+  const line = (k) => (r[k].n ? `${r[k].top2} of ${r[k].n} (${r[k].top2_pct}%)` : 'not collected');
+  const topics = Object.entries(u.topics).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k]) => k).join(', ') || 'none';
+  const t = f.tasks;
+  const task = (k) => (t[k].tried ? `${t[k].easy + t[k].hard} of ${t[k].tried}` : 'not collected');
+  return [
+    `## 3. Prototype test (n = ${f.n})`,
+    '',
+    '| Measure | Result |',
+    '| --- | --- |',
+    `| Found it easy to use (4–5 out of 5) | ${line('rate_easy')} |`,
+    `| Felt private (4–5 out of 5) | ${line('rate_private')} |`,
+    `| Trusted the answers (4–5 out of 5) | ${line('rate_trust')} |`,
+    `| More likely to get tested (4–5 out of 5) | ${line('rate_would_test')} |`,
+    `| Completed "ask the chat" | ${task('task_chat')} |`,
+    `| Completed "do the check" | ${task('task_check')} |`,
+    `| Completed "find a free clinic" | ${task('task_clinic')} |`,
+    `| Questions asked during testing | ${u.questions} (top topics: ${topics}) |`,
+    `| Interviews logged | ${iv.n} |`,
+  ].join('\n');
+}
+
+function viewFeedback() {
+  const rows = data.feedback.filter((r) =>
+    (filter.status === 'all' || (filter.status === 'open' ? !['fixed', 'wont_fix'].includes(r.status) : r.status === filter.status)) &&
+    (!filter.priority || r.priority === filter.priority));
+  return el('div', {},
+    el('div', { className: 'card' },
+      el('h2', {}, 'Triage'),
+      el('p', { className: 'muted' }, 'For each comment: what type of issue is it, how severe and how frequent? P0 blocks the core journey (fix first), P1 is major pain with a workaround, P2 minor, P3 cosmetic. Then decide Must / Should / Could / Won’t for this iteration. Open a GitHub issue for every P0 and P1.'),
+      el('div', { className: 'toolbar' },
+        el('div', { className: 'filters' },
+          select({ open: 'Open (not fixed)', all: 'All', new: 'New', planned: 'Planned', fixed: 'Fixed', wont_fix: 'Won’t fix' }, filter.status, (v) => { filter.status = v; render(); }, 'Filter by status'),
+          select({ '': 'Any priority', P0: 'P0', P1: 'P1', P2: 'P2', P3: 'P3' }, filter.priority, (v) => { filter.priority = v; render(); }, 'Filter by priority')),
+        el('button', { type: 'button', onclick: () => download('feedback') }, 'Export CSV'))),
+    rows.length ? rows.map(feedbackCard) : empty(data.feedback.length ? 'Nothing matches this filter.' : 'No tester feedback yet.'));
+}
+
+function feedbackCard(r) {
+  const save = async (patch) => {
+    const res = await api(`/api/team/feedback/${r.id}`, { method: 'PATCH', body: JSON.stringify(patch) });
+    Object.assign(r, await res.json());
+    const o = await api('/api/team/overview'); data.overview = await o.json();
+  };
+  const note = el('input', { className: 'text', value: r.team_note || '', placeholder: 'Team note (e.g. GitHub issue #12)', onchange: (e) => save({ team_note: e.target.value }) });
+  note.setAttribute('aria-label', 'Team note');
+  let armed = false;
+  const del = el('button', { type: 'button', className: 'small', onclick: async () => {
+    if (!armed) { armed = true; del.textContent = 'Click again to delete'; return; }
+    await api(`/api/team/feedback/${r.id}`, { method: 'DELETE' });
+    data.feedback = data.feedback.filter((x) => x.id !== r.id);
+    render();
+  } }, 'Delete');
+  const ratings = Object.keys(LABELS.rate).filter((k) => r[k]).map((k) => `${LABELS.rate[k]}: ${r[k]}/5`).join(' · ');
+  return el('article', { className: 'card fb' },
+    el('div', { className: 'fb-meta' },
+      el('strong', {}, LABELS.role[r.role] || r.role), ` · ${r.age_group || 'age not given'} · ${r.platform} · ${new Date(r.created_at).toLocaleString()}`),
+    el('div', { className: 'fb-tasks' }, Object.keys(LABELS.task).map((k) => el('span', { className: `tag res-${r[k]}` }, `${LABELS.task[k]}: ${LABELS.result[r[k]] || r[k]}`))),
+    ratings ? el('p', { className: 'muted' }, ratings) : null,
+    ['liked', 'confusing', 'change'].filter((k) => r[k]).map((k) =>
+      el('p', { className: 'fb-text' }, el('span', { className: 'fb-k' }, { liked: 'Liked', confusing: 'Confusing / broken', change: 'Would change' }[k] + ': '), r[k])),
+    el('div', { className: 'triage' },
+      select(LABELS.category, r.category || '', (v) => save({ category: v }), 'Category'),
+      select(LABELS.priority, r.priority || '', (v) => save({ priority: v }), 'Priority'),
+      select(LABELS.moscow, r.moscow || '', (v) => save({ moscow: v }), 'MoSCoW'),
+      select(LABELS.status, r.status || 'new', (v) => save({ status: v }), 'Status'),
+      note, del));
+}
+
+function viewInterviews() {
+  const f = {};
+  const msg = el('p', { className: 'form-msg', role: 'alert' });
+  const field = (name, label, input) => { f[name] = input; input.id = 'iv_' + name; return el('div', { className: 'field' }, el('label', { htmlFor: input.id }, label), input); };
+  const form = el('form', { className: 'card', onsubmit: async (e) => {
+    e.preventDefault();
+    const body = {
+      code: f.code.value, grp: f.grp.value, method: f.method.value, month: f.month.value, consent: f.consent.checked,
+      key_points: f.key_points.value, quote: f.quote.value, themes: f.themes.value,
+    };
+    try {
+      const res = await api('/api/team/interviews', { method: 'POST', body: JSON.stringify(body) });
+      data.interviews.unshift(await res.json());
+      const o = await api('/api/team/overview'); data.overview = await o.json();
+      render();
+    } catch (err) { msg.textContent = err.message; }
+  } },
+    el('h2', {}, 'Log an interview'),
+    el('div', { className: 'alert soon' }, 'No names, workplaces, exact dates or anything that could identify the person. Never record anyone’s STI or health status. Use a code: W01 for young women, H01 for health workers, P01 for parents.'),
+    el('div', { className: 'grid2' },
+      field('code', 'Anonymous code', el('input', { className: 'text', placeholder: 'W01', maxLength: 5, required: true })),
+      field('grp', 'Group', el('select', {}, el('option', { value: '' }, 'Choose…'), Object.entries(LABELS.grp).map(([v, t]) => el('option', { value: v }, t)))),
+      field('method', 'Method', el('select', {}, Object.entries(LABELS.method).map(([v, t]) => el('option', { value: v }, t)))),
+      field('month', 'Month', el('input', { className: 'text', type: 'month', value: new Date().toISOString().slice(0, 7) }))),
+    field('key_points', 'Key points (what they said about the problem, barriers, the prototype)', el('textarea', { rows: 4, maxLength: 1500 })),
+    field('quote', 'One short quote (optional, anonymous, with permission)', el('input', { className: 'text', maxLength: 300 })),
+    field('themes', 'Themes (comma separated, e.g. shame, privacy, cost)', el('input', { className: 'text', maxLength: 200 })),
+    el('label', { className: 'opt' }, (f.consent = el('input', { type: 'checkbox' })), el('span', {}, 'The person agreed to notes being taken and to anonymous use in our report.')),
+    msg,
+    el('button', { className: 'primary', type: 'submit' }, 'Save interview'));
+
+  const themeCounts = {};
+  for (const r of data.interviews) for (const t of String(r.themes || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean)) themeCounts[t] = (themeCounts[t] || 0) + 1;
+  const themeRows = Object.entries(themeCounts).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({ label: k, pct: pct(v, data.interviews.length), value: `${v} of ${data.interviews.length}` }));
+
+  const table = data.interviews.length
+    ? el('div', { className: 'table-wrap' }, el('table', {},
+        el('thead', {}, el('tr', {}, ['Code', 'Group', 'Method', 'Month', 'Key points', 'Quote', 'Themes', ''].map((h) => el('th', {}, h)))),
+        el('tbody', {}, data.interviews.map((r) => el('tr', {},
+          el('td', {}, r.code), el('td', {}, LABELS.grp[r.grp] || r.grp), el('td', {}, LABELS.method[r.method] || r.method), el('td', {}, r.month),
+          el('td', { className: 'long' }, r.key_points), el('td', { className: 'long' }, r.quote ? `“${r.quote}”` : ''), el('td', {}, r.themes),
+          el('td', {}, el('button', { type: 'button', className: 'small', onclick: async (e) => {
+            if (e.target.dataset.armed !== '1') { e.target.dataset.armed = '1'; e.target.textContent = 'Sure?'; return; }
+            await api(`/api/team/interviews/${r.id}`, { method: 'DELETE' });
+            data.interviews = data.interviews.filter((x) => x.id !== r.id);
+            render();
+          } }, 'Delete')))))))
+    : empty('No interviews logged yet.');
+
+  return el('div', {}, form,
+    el('section', { className: 'card' }, el('h2', {}, 'Themes across interviews'), themeRows.length ? bars(themeRows) : empty('Add themes to see how often each comes up.')),
+    el('section', { className: 'card' },
+      el('div', { className: 'toolbar' }, el('h2', {}, `Interview log (${data.interviews.length})`), el('button', { type: 'button', onclick: () => download('interviews') }, 'Export CSV')),
+      table));
+}
+
+function viewSurvey() {
+  const o = data.overview;
+  const s = o.survey;
+  const link = `${location.origin}/survey`;
+  const copyBtn = el('button', { type: 'button', className: 'small', onclick: async () => {
+    try { await navigator.clipboard.writeText(link); copyBtn.textContent = 'Copied'; } catch { copyBtn.textContent = link; }
+  } }, 'Copy link');
+  const share = el('div', { className: 'card' },
+    el('h2', {}, 'Share the survey'),
+    el('p', { className: 'muted' }, 'Anonymous, 3 minutes, Mongolian by default (English: add ?lang=en). Answers are saved straight to the database and appear here. Share it in university groups and young women\'s Facebook groups.'),
+    el('p', {}, el('a', { href: '/survey', target: '_blank', className: 'link' }, link)),
+    el('div', { className: 'filters' }, copyBtn,
+      el('button', { type: 'button', className: 'small', onclick: () => download('survey') }, 'Export survey CSV')));
+  const notes = [];
+  if (o.survey_live === false) notes.push('Survey answers can\'t be read from the database: ' + (o.survey_error || ''));
+  if (o.survey_backup) notes.push(`${o.survey_backup} answer(s) are kept in a temporary backup on the server because the database refused them. They move into the database automatically once it works, but a server restart before then loses them.`);
+  if ((o.survey_missing_columns || []).length) notes.push(`The database is missing these columns, so those answers were not saved: ${o.survey_missing_columns.join(', ')}.`);
+  const problem = notes.length
+    ? el('div', { className: 'alert today' }, notes.map((n) => el('p', { style: 'margin:0 0 6px', textContent: n })),
+        el('p', { style: 'margin:0', textContent: 'Fix: Supabase → SQL Editor → paste the latest db/schema.sql → Run, then click Refresh here.' }))
+    : null;
+  if (!s || !s.respondents) return el('div', {}, problem, share, el('div', { className: 'card' }, el('h2', {}, 'No survey answers yet'), empty('Share the link above. Results appear here as soon as the first answer arrives.')));
+  return el('div', {},
+    problem, share,
+    el('p', { className: 'muted' }, `${s.respondents} responses${s.source === 'naiz_survey' ? ' (live from the database)' : ' (imported summary)'}. Written answers are counted here; read them in the CSV export and theme them by hand.`),
+    s.respondents < 30 ? el('p', { className: 'alert soon' }, `Small sample (n = ${s.respondents}): report as an early signal.`) : null,
+    s.questions.map((q, i) => el('section', { className: 'card' },
+      el('h2', {}, `${i + 1}. ${q.question}`),
+      el('p', { className: 'muted' }, `Answered by ${q.answered} of ${s.respondents}` + (q.type === 'multi' ? ' · tick-all question, adds up to more than 100%' : '') + (q.type === 'scale' && q.mean != null ? ` · average ${q.mean}/5, ${q.top2_pct}% chose 4–5` : '')),
+      q.type === 'open' ? empty(`${q.answered} written answers: see the CSV export.`) :
+        bars(q.options.map((x) => ({ label: x.option, pct: x.pct || 0, value: `${x.count} (${x.pct ?? 0}%)` }))))));
+}
+
+function viewAnalyze() {
+  const out = el('div', {});
+  const btn = el('button', { className: 'primary', type: 'button', onclick: async () => {
+    btn.disabled = true;
+    out.replaceChildren(el('p', { className: 'muted' }, 'Analysing… (about 20 seconds)'));
+    try {
+      const res = await api('/api/team/analyze', { method: 'POST', body: '{}' });
+      const { report, items } = await res.json();
+      out.replaceChildren(el('p', { className: 'muted' }, `Based on ${items} items.`), el('pre', { className: 'report' }, report));
+    } catch (e) { out.replaceChildren(el('p', { className: 'form-msg' }, String(e.message))); }
+    btn.disabled = false;
+  } }, 'Analyse feedback with AI');
+  return el('div', { className: 'card' },
+    el('h2', {}, 'AI feedback analyzer'),
+    el('p', { className: 'muted' }, 'Groups the written tester comments and interview notes into themes and suggests issue categories and priorities. It only reorganises what you collected: check every theme and count against the raw feedback before using it, and do the final triage yourselves.'),
+    data.overview.ai ? btn : el('p', { className: 'alert soon' }, 'Add ANTHROPIC_API_KEY on the server to turn this on.'),
+    out);
+}
+
+start();
+</script>
+</body>
+</html>
