@@ -122,6 +122,8 @@ function supabaseStore(table, base, key) {
 // Turns a Supabase error into a plain fix the team can act on.
 export function explainSupabaseError(message = '') {
   const m = String(message);
+  if (/PGRST204|Could not find the '.*' column/i.test(m))
+    return 'The database is missing columns for the latest survey questions. In Supabase open SQL Editor, paste the latest db/schema.sql and click Run.';
   if (/42P01|does not exist|PGRST205|schema cache|Could not find the table/i.test(m))
     return 'The database tables are missing. In Supabase open SQL Editor, paste db/schema.sql and click Run.';
   if (/42501|permission denied/i.test(m))

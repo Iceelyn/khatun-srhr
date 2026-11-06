@@ -10,6 +10,8 @@ Goal: in 24–48 hours, check whether young women in Mongolia experience the pro
 
 ## A. Online survey (target 50–100 responses)
 
+> **The live survey is at `/survey`.** Its current questions (updated November 2026: typed age, gynecologist visits and reasons for not going, known STIs, feelings about sexual health topics, reproductive-health knowledge) are defined in `src/survey-form.js`, in Mongolian and English. The list below is the first version.
+
 Google Form, anonymous (don't collect emails). Share in university groups and young women's Facebook groups. Translate into Mongolian.
 
 **Consent line at the top:** "This anonymous survey takes 3 minutes. It's for a student health project. You can stop at any time. Please only take part if you are 18 or older."

@@ -70,24 +70,41 @@ grant select, insert, update, delete on table tester_feedback, interviews, event
 -- The public anon/authenticated roles get nothing: RLS is on and there are no policies.
 revoke all on table tester_feedback, interviews, events from anon, authenticated;
 
--- Problem-validation survey answers from /survey (research/02-protocol.md, section A).
+-- Problem-validation survey answers from /survey (src/survey-form.js).
 -- Anonymous: no name, email or phone. Tick-all answers are stored as JSON lists.
 create table if not exists survey_responses (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
-  lang text,              -- mn | en
-  age_group text,         -- 18-20 | 21-24 | 25-29
-  location text,          -- ulaanbaatar | aimag_center | soum | other
-  gyn_visits text,        -- never | once | more
-  last_gyn text,          -- within_1y | 1_3y | over_3y | never
-  unchecked_worry text,   -- yes | no | prefer_not
+  lang text,                -- mn | en
+  age smallint,             -- typed by the respondent, 18+
+  age_group text,           -- worked out from age: 18-20 | 21-24 | 25-29 | 30-39 | 40+
+  location text,            -- ulaanbaatar | aimag_center | soum (сумын төв)
+  gyn_ever text,            -- yes | no
+  last_gyn text,            -- within_1y | 1_3y | over_3y (only if gyn_ever = yes)
+  never_gyn_reasons jsonb default '[]'::jsonb, -- only if gyn_ever = no
+  gyn_worry_factors text,   -- written; scrubbed of emails, phone numbers and links
+  unchecked_worry text,     -- yes | no | prefer_not
   barriers jsonb default '[]'::jsonb,
+  sti_known jsonb default '[]'::jsonb,
+  heard_hpv text,           -- yes | no | not_sure
+  feelings jsonb default '[]'::jsonb,
   info_sources jsonb default '[]'::jsonb,
-  info_trust text,        -- 1-5
-  heard_hpv text,         -- yes | no | not_sure
-  would_use_chat text,    -- 1-5
-  what_would_help text    -- scrubbed of emails, phone numbers and links
+  info_trust text,          -- 1-5
+  repro_knowledge text,     -- 1-5
+  would_use_chat text,      -- 1-5
+  what_would_help text,     -- written; scrubbed
+  gyn_visits text           -- old question (never | once | more), replaced by gyn_ever; kept for earlier answers
 );
+-- Tables created before the survey changed get the new columns here. Safe to run more than once.
+alter table survey_responses add column if not exists age smallint;
+alter table survey_responses add column if not exists age_group text;
+alter table survey_responses add column if not exists gyn_ever text;
+alter table survey_responses add column if not exists never_gyn_reasons jsonb default '[]'::jsonb;
+alter table survey_responses add column if not exists gyn_worry_factors text;
+alter table survey_responses add column if not exists sti_known jsonb default '[]'::jsonb;
+alter table survey_responses add column if not exists feelings jsonb default '[]'::jsonb;
+alter table survey_responses add column if not exists repro_knowledge text;
+alter table survey_responses add column if not exists gyn_visits text;
 alter table survey_responses enable row level security;
 grant select, insert, update, delete on table survey_responses to service_role;
 revoke all on table survey_responses from anon, authenticated;

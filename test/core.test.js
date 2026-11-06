@@ -171,26 +171,45 @@ test('store: common SUPABASE_URL and key copy-paste mistakes are cleaned up', as
 });
 
 test('survey: validates, drops unknown values, scrubs text, and summarises', async () => {
-  const { validateSurvey, summarizeSurveyResponses } = await import('../src/survey-form.js');
-  assert.match(validateSurvey({ age_group: '21-24' }).error, /18/);
-  assert.match(validateSurvey({ consent: true }).error, /How old/);
+  const { validateSurvey, summarizeSurveyResponses, SURVEY_QUESTIONS } = await import('../src/survey-form.js');
+  assert.match(validateSurvey({ age: 22 }).error, /18/);
+  assert.match(validateSurvey({ consent: true }).error, /age/i);
+  assert.match(validateSurvey({ consent: true, age: 'abc' }).error, /number/);
+  assert.match(validateSurvey({ consent: true, age: 16 }).error, /18 or older/);
   const { row } = validateSurvey({
-    consent: true, age_group: '21-24', location: 'mars', unchecked_worry: 'yes',
-    barriers: ['ashamed', 'cost', 'hacked'], info_sources: ['facebook'], would_use_chat: '5',
-    what_would_help: 'Call me on 9911 2233 or a@b.mn', name: 'Bat',
+    consent: true, age: '23', location: 'other', gyn_ever: 'no', last_gyn: 'within_1y',
+    never_gyn_reasons: ['ashamed', 'afraid_scolded', 'hacked'], unchecked_worry: 'yes',
+    barriers: ['ashamed', 'cost', 'hacked'], sti_known: ['hpv', 'syphilis', 'hiv'], feelings: ['worried', 'ashamed'],
+    repro_knowledge: '2', would_use_chat: '5', heard_hpv: 'no',
+    gyn_worry_factors: 'Scared, email me a@b.mn', what_would_help: 'Call me on 9911 2233', name: 'Bat',
   });
-  assert.equal(row.location, '');
+  assert.equal(row.age, 23);
+  assert.equal(row.age_group, '21-24');
+  assert.equal(row.location, ''); // 'other' was removed from the options
+  assert.equal(row.last_gyn, ''); // only asked when gyn_ever = yes
+  assert.deepEqual(row.never_gyn_reasons, ['ashamed', 'afraid_scolded']);
   assert.deepEqual(row.barriers, ['ashamed', 'cost']);
+  assert.deepEqual(row.sti_known, ['hpv', 'syphilis', 'hiv']);
   assert.equal(row.name, undefined);
-  assert.doesNotMatch(row.what_would_help, /9911|a@b/);
-  // Follow-up only counts when its condition is met
-  assert.deepEqual(validateSurvey({ consent: true, age_group: '18-20', unchecked_worry: 'no', barriers: ['cost'] }).row.barriers, []);
-  const s = summarizeSurveyResponses([row, { ...row, would_use_chat: '3', barriers: [] }]);
+  assert.doesNotMatch(row.what_would_help + row.gyn_worry_factors, /9911|a@b/);
+  // Follow-ups only count when their condition is met
+  const yes = validateSurvey({ consent: true, age: 30, gyn_ever: 'yes', last_gyn: '1_3y', never_gyn_reasons: ['cost'], unchecked_worry: 'no', barriers: ['cost'] }).row;
+  assert.equal(yes.last_gyn, '1_3y');
+  assert.deepEqual(yes.never_gyn_reasons, []);
+  assert.deepEqual(yes.barriers, []);
+  // Every question has both languages; the location options are exactly the three asked for
+  for (const q of SURVEY_QUESTIONS) assert.ok(q.en && q.mn, q.id);
+  assert.deepEqual(SURVEY_QUESTIONS.find((q) => q.id === 'location').options.map((o) => o.mn), ['Улаанбаатар', 'Аймгийн төв', 'Сумын төв']);
+  assert.deepEqual(SURVEY_QUESTIONS.find((q) => q.id === 'sti_known').options.map((o) => o.mn), ['Хламиди', 'Хүний папилломавирус (ХПВ)', 'Тэмбүү', 'ХДХВ-ийн халдвар', 'Трихомониаз', 'Заг хүйтэн']);
+
+  const s = summarizeSurveyResponses([row, { ...row, age: 35, would_use_chat: '3', barriers: [] }]);
   assert.equal(s.respondents, 2);
+  const age = s.questions.find((q) => q.id === 'age');
+  assert.equal(age.mean, 29);
+  assert.equal(age.options.find((o) => o.option === '21–24').count, 1);
   const use = s.questions.find((q) => q.id === 'would_use_chat');
   assert.equal(use.mean, 4);
   assert.equal(use.top2_pct, 50);
-  const bar = s.questions.find((q) => q.id === 'barriers');
-  assert.equal(bar.answered, 1);
-  assert.equal(bar.options.find((o) => o.option === 'Cost').pct, 100);
+  assert.equal(s.questions.find((q) => q.id === 'barriers').options.find((o) => o.option === 'Cost').pct, 100);
+  assert.equal(s.questions.find((q) => q.id === 'sti_known').options.find((o) => o.option === 'Chlamydia').count, 0);
 });
