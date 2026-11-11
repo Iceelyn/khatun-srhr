@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Naiz · Нууц чат</title>
+<link rel="stylesheet" href="/styles.css">
+<script>
+// First visit: show the 3-step welcome. Stored only in this browser.
+try { if (!localStorage.getItem('naiz-onboarded') && !location.search.includes('skip')) location.replace('/welcome' + location.search); } catch {}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <span class="pill safe left" data-t="anon">Нэргүй</span>
+    <a class="brand" href="/">Naiz</a>
+    <button id="lang" type="button" aria-label="Switch language">EN</button>
+  </header>
+
+  <!-- Primary action: the 2-minute check. This is the outcome we want most. -->
+  <section class="card hero check-cta" aria-labelledby="cta-title">
+    <span class="eyebrow" data-t="ctaEyebrow">Эндээс эхлээрэй</span>
+    <h1 id="cta-title" data-t="ctaTitle">Шинжилгээ өгөх хэрэгтэй юу?</h1>
+    <p class="muted" data-t="ctaSub">Хэдэн асуултад хариулаад ямар шинжилгээ, хэр яаралтай хэрэгтэйг мэдээрэй. Эмч нарын тогтоосон дүрмээр.</p>
+    <ul class="trust">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg><span data-t="t1">2 минут</span></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span data-t="t2">Нэргүй</span></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span data-t="t3">Хадгалахгүй</span></li>
+    </ul>
+    <a class="btn primary cta-btn" href="/check"><span data-t="ctaBtn">Эхлүүлэх</span> <span aria-hidden="true">→</span></a>
+  </section>
+
+  <div class="features two">
+    <a class="feature" href="/check#clinics">
+      <span class="ico blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><path d="M12 7v5M9.5 9.5h5"/></svg></span>
+      <span data-t="fClinics">Үнэгүй эмнэлэг</span>
+    </a>
+    <a class="feature" href="/feedback">
+      <span class="ico pink"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span>
+      <span data-t="fFeedback">Санал өгөх</span>
+    </a>
+  </div>
+
+  <!-- Secondary: the AI chat -->
+  <section class="assistant" aria-labelledby="ai-title">
+    <div class="assistant-head">
+      <span class="bot-avatar"><svg class="bot-ico" viewBox="0 0 40 40" aria-hidden="true"><g fill="#ffc93c"><circle cx="20" cy="9" r="7"/><circle cx="31" cy="17" r="7"/><circle cx="27" cy="30" r="7"/><circle cx="13" cy="30" r="7"/><circle cx="9" cy="17" r="7"/></g><circle cx="20" cy="20" r="8" fill="#ffe9a8"/><circle cx="17" cy="19" r="1.3" fill="#1f1d2b"/><circle cx="23" cy="19" r="1.3" fill="#1f1d2b"/><path d="M16.5 22.5q3.5 3 7 0" stroke="#1f1d2b" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg></span>
+      <div>
+        <h2 id="ai-title"><span data-t="aiName">Naiz AI туслах</span> <span class="ai-badge">AI</span></h2>
+        <p class="muted" data-t="aiSub">Эмчийн хянасан мэдээллээр хариулна · Нэргүй</p>
+      </div>
+    </div>
+    <div class="msg bot greet" data-t="greet">Сайн уу! Ичмээр санагдах асуултаа ч надаас асууж болно. Чамайг хэн болохыг би мэдэхгүй.</div>
+    <div class="chips" id="chips"></div>
+  </section>
+
+  <div class="chat" id="chat" aria-live="polite"></div>
+</div>
+
+<form class="ask" id="ask">
+  <div class="inner">
+    <label for="q" class="sr-only" data-t="label">Таны асуулт</label>
+    <div class="ask-field">
+      <span class="ask-bot"><svg class="bot-ico" viewBox="0 0 40 40" aria-hidden="true"><g fill="#ffc93c"><circle cx="20" cy="9" r="7"/><circle cx="31" cy="17" r="7"/><circle cx="27" cy="30" r="7"/><circle cx="13" cy="30" r="7"/><circle cx="9" cy="17" r="7"/></g><circle cx="20" cy="20" r="8" fill="#ffe9a8"/><circle cx="17" cy="19" r="1.3" fill="#1f1d2b"/><circle cx="23" cy="19" r="1.3" fill="#1f1d2b"/><path d="M16.5 22.5q3.5 3 7 0" stroke="#1f1d2b" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg></span>
+      <textarea id="q" rows="1" maxlength="1000" placeholder="Naiz AI-аас асуух…"></textarea>
+    </div>
+    <button class="primary send" type="submit" aria-label="Илгээх"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button>
+  </div>
+</form>
+
+<script>
+const T = {
+  mn: {
+    anon: 'Нэргүй', ctaEyebrow: 'Эндээс эхлээрэй', ctaTitle: 'Шинжилгээ өгөх хэрэгтэй юу?',
+    ctaSub: 'Хэдэн асуултад хариулаад ямар шинжилгээ, хэр яаралтай хэрэгтэйг мэдээрэй. Эмч нарын тогтоосон дүрмээр.',
+    t1: '2 минут', t2: 'Нэргүй', t3: 'Хадгалахгүй', ctaBtn: 'Эхлүүлэх',
+    aiName: 'Naiz AI туслах', aiSub: 'Эмчийн хянасан мэдээллээр хариулна · Нэргүй',
+    greet: 'Сайн уу! Ичмээр санагдах асуултаа ч надаас асууж болно. Чамайг хэн болохыг би мэдэхгүй.',
+    nudge: 'Санаа зовж байна уу? 2 минутын асуумжаар дараагийн алхмаа мэдээрэй.', nudgeBtn: 'Асуумж бөглөх →',
+    fClinics: 'Үнэгүй эмнэлэг', fFeedback: 'Санал өгөх',
+    intro: 'БЗДХ, сарын тэмдэг, жирэмслэлтээс хамгаалах, харилцаа. Хариулт бүрийг эмч хянадаг. Таны нэрийг асуухгүй.',
+    checkLink: 'Шинжилгээ өгөх хэрэгтэй юу? 2 минутын асуумж', label: 'Таны асуулт', send: 'Илгээх',
+    placeholder: 'Naiz AI-аас асуух…', helpful: 'Тустай байлаа', notHelpful: 'Тус болсонгүй', thanks: 'Баярлалаа!',
+    thinking: '…', error: 'Алдаа гарлаа. Дахин оролдоно уу.',
+    chips: ['Шинж тэмдэггүй ч халдвар байж болох уу?', 'Эцэг эх маань мэдэх үү?', 'ХПВ гэж юу вэ?', 'Тэмбүү эдгэрдэг үү?'],
+  },
+  en: {
+    anon: 'Anonymous', ctaEyebrow: 'Start here', ctaTitle: 'Should I get tested?',
+    ctaSub: 'Answer a few questions and find out which tests you need and how soon. Based on rules set by doctors.',
+    t1: '2 minutes', t2: 'Anonymous', t3: 'Nothing saved', ctaBtn: 'Start the check',
+    aiName: 'Naiz AI assistant', aiSub: 'Answers from doctor-reviewed content · Anonymous',
+    greet: "Hi! You can ask me even the questions that feel embarrassing. I don't know who you are.",
+    nudge: 'Worried about this? Take the 2-minute check to see your next step.', nudgeBtn: 'Take the check →',
+    fClinics: 'Free clinics', fFeedback: 'Give feedback',
+    intro: 'STIs, periods, contraception, relationships. Every answer is reviewed by doctors. We never ask your name.',
+    checkLink: 'Should I get checked? 2-minute check', label: 'Your question', send: 'Send',
+    placeholder: 'Ask Naiz AI…', helpful: 'Helpful', notHelpful: 'Not helpful', thanks: 'Thank you!',
+    thinking: '…', error: 'Something went wrong. Please try again.',
+    chips: ['Can I have an STI without symptoms?', 'Will my parents find out?', 'What is HPV?', 'Can syphilis be cured?'],
+  },
+};
+// English first (for reviewers); ?lang=mn for links shared with our users. The choice is remembered.
+let lang = (() => {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'mn' || q === 'en') return q;
+  try { const saved = localStorage.getItem('naiz-lang'); if (saved === 'mn' || saved === 'en') return saved; } catch {}
+  return 'en';
+})();
+const saveLang = () => { try { localStorage.setItem('naiz-lang', lang); } catch {} };
+const chat = document.getElementById('chat');
+const q = document.getElementById('q');
+
+function render() {
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-t]').forEach((el) => { el.textContent = t[el.dataset.t]; });
+  q.placeholder = t.placeholder;
+  document.querySelector('form.ask .send').setAttribute('aria-label', t.send);
+  document.getElementById('lang').textContent = lang === 'mn' ? 'EN' : 'МН';
+  const chips = document.getElementById('chips');
+  chips.replaceChildren(...t.chips.map((c) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = c;
+    b.addEventListener('click', () => ask(c));
+    return b;
+  }));
+}
+
+function bubble(text, who) {
+  const d = document.createElement('div');
+  d.className = `msg ${who}`;
+  d.textContent = text;
+  chat.appendChild(d);
+  d.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  return d;
+}
+
+function feedback(bot, refs) {
+  const t = T[lang];
+  const row = document.createElement('div');
+  row.className = 'feedback';
+  for (const [label, helpful] of [[t.helpful, true], [t.notHelpful, false]]) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = label;
+    b.addEventListener('click', async () => {
+      await fetch('/api/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ helpful, refs }) });
+      row.replaceChildren(Object.assign(document.createElement('span'), { className: 'muted', textContent: t.thanks }));
+    });
+    row.appendChild(b);
+  }
+  bot.appendChild(row);
+}
+
+function nudge() {
+  const t = T[lang];
+  const d = document.createElement('div');
+  d.className = 'nudge';
+  const p = Object.assign(document.createElement('p'), { textContent: t.nudge });
+  const a = Object.assign(document.createElement('a'), { className: 'btn primary', href: '/check', textContent: t.nudgeBtn });
+  d.append(p, a);
+  chat.appendChild(d);
+  d.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+async function ask(text) {
+  const question = String(text).trim();
+  if (!question) return;
+  bubble(question, 'me');
+  q.value = '';
+  const bot = bubble(T[lang].thinking, 'bot');
+  try {
+    const res = await fetch('/api/ask', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q: question }) });
+    const data = await res.json();
+    bot.textContent = data.answer || data.error || T[lang].error;
+    if (data.answer && !data.flag) {
+      feedback(bot, data.refs || []);
+      nudge(); // every answer points to the next step: the 2-minute check
+    }
+  } catch {
+    bot.textContent = T[lang].error;
+  }
+}
+
+document.getElementById('ask').addEventListener('submit', (e) => { e.preventDefault(); ask(q.value); });
+q.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(q.value); } });
+document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; saveLang(); render(); });
+render();
+</script>
+<script src="/nav.js"></script>
+</body>
+</html>

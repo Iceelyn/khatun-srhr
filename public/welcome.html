@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Naiz · Тавтай морил</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="onboard">
+  <header class="bar">
+    <button class="ghost left" id="skip" type="button" data-t="skip">Алгасах</button>
+    <span class="brand">Naiz</span>
+    <button id="lang" type="button" aria-label="Switch language">EN</button>
+  </header>
+
+  <main class="slides" aria-live="polite">
+    <!-- 1: safe, private space -->
+    <section class="slide active" aria-roledescription="slide">
+      <div class="art">
+        <svg viewBox="0 0 300 240" role="img" aria-hidden="true">
+          <circle cx="58" cy="60" r="7" fill="#7b6cf6"/><circle cx="66" cy="66" r="7" fill="#ff8fc4" opacity=".8"/>
+          <circle cx="250" cy="96" r="5" fill="#7b6cf6"/><circle cx="238" cy="190" r="4" fill="#ff6b6b"/>
+          <path d="M40 150l8-8M44 158l10-4" stroke="#b9b1ff" stroke-width="3" stroke-linecap="round"/>
+          <!-- shield -->
+          <path d="M218 36l26 10v20c0 18-12 30-26 36-14-6-26-18-26-36V46z" fill="#fff" stroke="#1f1d2b" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M207 68l8 8 15-16" fill="none" stroke="#7b6cf6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- person -->
+          <path d="M150 52c-22 0-34 18-32 40 1 14-6 26-2 36h68c4-10-3-22-2-36 2-22-10-40-32-40z" fill="#6c4cf0"/>
+          <circle cx="150" cy="86" r="20" fill="#fff" stroke="#1f1d2b" stroke-width="3"/>
+          <path d="M131 80c6-14 32-16 38 2" fill="#6c4cf0"/>
+          <circle cx="143" cy="88" r="2" fill="#1f1d2b"/><circle cx="157" cy="88" r="2" fill="#1f1d2b"/>
+          <path d="M145 96q5 4 10 0" stroke="#1f1d2b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M122 170c0-34 12-58 28-58s28 24 28 58z" fill="#fff" stroke="#1f1d2b" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M92 196c12-26 40-30 58-30s46 4 58 30c-20 10-96 10-116 0z" fill="#ff6b6b" stroke="#1f1d2b" stroke-width="3" stroke-linejoin="round"/>
+          <!-- laptop -->
+          <rect x="118" y="140" width="64" height="40" rx="5" fill="#fff" stroke="#1f1d2b" stroke-width="3"/>
+          <circle cx="150" cy="160" r="5" fill="none" stroke="#1f1d2b" stroke-width="2.5"/>
+          <path d="M108 184h84" stroke="#1f1d2b" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="copy">
+        <h1 data-t="t1">Аюулгүй, нууц орон зай</h1>
+        <p class="muted" data-t="d1">Нэр, утас асуухгүй. Хариулт бүрийг эмч хянадаг.</p>
+      </div>
+    </section>
+
+    <!-- 2: ask without shame -->
+    <section class="slide" aria-roledescription="slide">
+      <div class="art">
+        <svg viewBox="0 0 300 240" role="img" aria-hidden="true">
+          <circle cx="44" cy="70" r="5" fill="#ff6b6b"/><circle cx="262" cy="150" r="6" fill="#7b6cf6"/>
+          <path d="M248 52l10-6M252 62l12 0" stroke="#b9b1ff" stroke-width="3" stroke-linecap="round"/>
+          <!-- bubbles -->
+          <rect x="30" y="26" width="104" height="48" rx="18" fill="#fff" stroke="#1f1d2b" stroke-width="3"/>
+          <path d="M60 74l-6 14 18-14" fill="#fff" stroke="#1f1d2b" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M48 44h66M48 56h42" stroke="#b9b1ff" stroke-width="5" stroke-linecap="round"/>
+          <rect x="176" y="70" width="96" height="44" rx="18" fill="#7b6cf6"/>
+          <path d="M240 114l8 12-20-12" fill="#7b6cf6"/>
+          <text x="224" y="99" text-anchor="middle" font-family="system-ui, sans-serif" font-size="22" font-weight="800" fill="#fff">?</text>
+          <!-- person waving -->
+          <path d="M150 74c-20 0-30 16-28 36 1 12-5 22-2 32h60c3-10-3-20-2-32 2-20-8-36-28-36z" fill="#6c4cf0"/>
+          <circle cx="150" cy="104" r="19" fill="#fff" stroke="#1f1d2b" stroke-width="3"/>
+          <path d="M132 99c6-13 30-15 36 2" fill="#6c4cf0"/>
+          <circle cx="143" cy="106" r="2" fill="#1f1d2b"/><circle cx="157" cy="106" r="2" fill="#1f1d2b"/>
+          <path d="M144 114q6 5 12 0" stroke="#1f1d2b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M176 140l20-42" stroke="#1f1d2b" stroke-width="10" stroke-linecap="round"/><path d="M176 140l20-42" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+          <path d="M120 214c0-46 12-76 30-76s30 30 30 76z" fill="#fff" stroke="#1f1d2b" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M120 214v-20h60v20z" fill="#ff6b6b" stroke="#1f1d2b" stroke-width="3" stroke-linejoin="round"/>
+          <!-- window frame -->
+          <path d="M84 150v70M216 150v70M70 220h160" stroke="#1f1d2b" stroke-width="3" stroke-linecap="round"/>
+          <path d="M84 150c-10 20-12 50-8 70M216 150c10 20 12 50 8 70" stroke="#b9b1ff" stroke-width="3" fill="none"/>
+        </svg>
+      </div>
+      <div class="copy">
+        <h1 data-t="t2">Ичихгүйгээр асуу</h1>
+        <p class="muted" data-t="d2">БЗДХ, сарын тэмдэг, хамгаалалт, харилцаа. Монгол, англиар.</p>
+      </div>
+    </section>
+
+    <!-- 3: get checked in time -->
+    <section class="slide" aria-roledescription="slide">
+      <div class="art">
+        <svg viewBox="0 0 300 240" role="img" aria-hidden="true">
+          <circle cx="40" cy="190" r="5" fill="#7b6cf6"/><circle cx="270" cy="40" r="5" fill="#ff6b6b"/>
+          <!-- board -->
+          <rect x="26" y="40" width="150" height="110" rx="8" fill="#fff" stroke="#1f1d2b" stroke-width="3"/>
+          <rect x="40" y="56" width="50" height="34" rx="4" fill="#eeebff" stroke="#1f1d2b" stroke-width="2"/>
+          <path d="M48 68h30M48 78h20" stroke="#7b6cf6" stroke-width="3" stroke-linecap="round"/>
+          <rect x="104" y="60" width="56" height="40" rx="4" fill="#fff" stroke="#1f1d2b" stroke-width="2"/>
+          <path d="M112 72l5 5 9-9M112 88l5 5 9-9" stroke="#7b6cf6" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="52" y="104" width="54" height="32" rx="4" fill="#ffe1ef" stroke="#1f1d2b" stroke-width="2"/>
+          <path d="M60 116h36M60 126h22" stroke="#a8216a" stroke-width="3" stroke-linecap="round"/>
+          <!-- pin -->
+          <path d="M142 116c0-11 8-18 16-18s16 7 16 18c0 12-16 26-16 26s-16-14-16-26z" fill="#2f80ed" stroke="#1f1d2b" stroke-width="2.5"/>
+          <path d="M158 110v12M152 116h12" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+          <!-- person pointing -->
+          <path d="M226 34c-18 0-26 14-24 32 1 10-4 18-2 26h52c2-8-3-16-2-26 2-18-6-32-24-32z" fill="#6c4cf0"/>
+          <circle cx="226" cy="60" r="17" fill="#fff" stroke="#1f1d2b" stroke-width="3"/>
+          <path d="M210 56c5-12 27-13 32 2" fill="#6c4cf0"/>
+          <circle cx="220" cy="62" r="2" fill="#1f1d2b"/><circle cx="232" cy="62" r="2" fill="#1f1d2b"/>
+          <path d="M221 69q5 4 10 0" stroke="#1f1d2b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M206 90l-30 6" stroke="#1f1d2b" stroke-width="10" stroke-linecap="round"/><path d="M206 90l-30 6" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+          <path d="M204 150c0-40 8-66 22-66s22 26 22 66z" fill="#fff" stroke="#1f1d2b" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M206 146l-8 72M246 146l8 72" stroke="#ff6b6b" stroke-width="18" stroke-linecap="round"/>
+          <path d="M190 222h18M246 222h20" stroke="#1f1d2b" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="copy">
+        <h1 data-t="t3">Шинжилгээгээ цагт нь өг</h1>
+        <p class="muted" data-t="d3">2 минутын нууц асуумж, дараа нь үнэгүй эмнэлгүүдийг эхэнд нь харуулна.</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="dots" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
+  <div class="actions">
+    <button class="btn primary" id="next" type="button" data-t="next">Дараагийнх</button>
+  </div>
+</div>
+
+<script>
+const T = {
+  mn: {
+    skip: 'Алгасах', next: 'Дараагийнх', start: 'Эхлэх',
+    t1: 'Аюулгүй, нууц орон зай', d1: 'Нэр, утас асуухгүй. Хариулт бүрийг эмч хянадаг.',
+    t2: 'Ичихгүйгээр асуу', d2: 'БЗДХ, сарын тэмдэг, хамгаалалт, харилцаа. Монгол, англиар.',
+    t3: 'Шинжилгээгээ цагт нь өг', d3: '2 минутын нууц асуумж, дараа нь үнэгүй эмнэлгүүдийг эхэнд нь харуулна.',
+  },
+  en: {
+    skip: 'Skip', next: 'Next', start: 'Get started',
+    t1: 'A safe, private space', d1: 'We never ask your name or number. Every answer is reviewed by doctors.',
+    t2: 'Ask without shame', d2: 'STIs, periods, contraception, relationships. In Mongolian or English.',
+    t3: 'Get checked in time', d3: 'A 2-minute private check, then free clinics shown first.',
+  },
+};
+// English first (for reviewers); ?lang=mn for links shared with our users. The choice is remembered.
+let lang = (() => {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'mn' || q === 'en') return q;
+  try { const saved = localStorage.getItem('naiz-lang'); if (saved === 'mn' || saved === 'en') return saved; } catch {}
+  return 'en';
+})();
+const saveLang = () => { try { localStorage.setItem('naiz-lang', lang); } catch {} };
+let i = 0;
+const slides = [...document.querySelectorAll('.slide')];
+const dots = [...document.querySelectorAll('.dots span')];
+const next = document.getElementById('next');
+
+function render() {
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-t]').forEach((el) => { el.textContent = t[el.dataset.t]; });
+  document.getElementById('lang').textContent = lang === 'mn' ? 'EN' : 'МН';
+  slides.forEach((s, n) => s.classList.toggle('active', n === i));
+  dots.forEach((d, n) => d.classList.toggle('on', n === i));
+  next.textContent = i === slides.length - 1 ? t.start : t.next;
+}
+
+function finish() {
+  try { localStorage.setItem('naiz-onboarded', '1'); } catch {}
+  saveLang();
+  location.replace('/?skip');
+}
+
+next.addEventListener('click', () => { if (i < slides.length - 1) { i++; render(); } else finish(); });
+document.getElementById('skip').addEventListener('click', finish);
+document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; saveLang(); render(); });
+
+// Swipe between slides on phones.
+let x0 = null;
+document.querySelector('.slides').addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+document.querySelector('.slides').addEventListener('touchend', (e) => {
+  if (x0 === null) return;
+  const dx = e.changedTouches[0].clientX - x0;
+  x0 = null;
+  if (Math.abs(dx) < 40) return;
+  i = Math.max(0, Math.min(slides.length - 1, i + (dx < 0 ? 1 : -1)));
+  render();
+});
+render();
+</script>
+</body>
+</html>
