@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="mn">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -108,7 +108,7 @@
       </div>
       <div class="copy">
         <h1 data-t="t3">Шинжилгээгээ цагт нь өг</h1>
-        <p class="muted" data-t="d3">2 минутын нууц шалгалт, дараа нь үнэгүй эмнэлгүүдийг эхэнд нь харуулна.</p>
+        <p class="muted" data-t="d3">2 минутын нууц асуумж, дараа нь үнэгүй эмнэлгүүдийг эхэнд нь харуулна.</p>
       </div>
     </section>
   </main>
@@ -125,7 +125,7 @@ const T = {
     skip: 'Алгасах', next: 'Дараагийнх', start: 'Эхлэх',
     t1: 'Аюулгүй, нууц орон зай', d1: 'Нэр, утас асуухгүй. Хариулт бүрийг эмч хянадаг.',
     t2: 'Ичихгүйгээр асуу', d2: 'БЗДХ, сарын тэмдэг, хамгаалалт, харилцаа. Монгол, англиар.',
-    t3: 'Шинжилгээгээ цагт нь өг', d3: '2 минутын нууц шалгалт, дараа нь үнэгүй эмнэлгүүдийг эхэнд нь харуулна.',
+    t3: 'Шинжилгээгээ цагт нь өг', d3: '2 минутын нууц асуумж, дараа нь үнэгүй эмнэлгүүдийг эхэнд нь харуулна.',
   },
   en: {
     skip: 'Skip', next: 'Next', start: 'Get started',
@@ -134,7 +134,14 @@ const T = {
     t3: 'Get checked in time', d3: 'A 2-minute private check, then free clinics shown first.',
   },
 };
-let lang = 'mn';
+// English first (for reviewers); ?lang=mn for links shared with our users. The choice is remembered.
+let lang = (() => {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'mn' || q === 'en') return q;
+  try { const saved = localStorage.getItem('naiz-lang'); if (saved === 'mn' || saved === 'en') return saved; } catch {}
+  return 'en';
+})();
+const saveLang = () => { try { localStorage.setItem('naiz-lang', lang); } catch {} };
 let i = 0;
 const slides = [...document.querySelectorAll('.slide')];
 const dots = [...document.querySelectorAll('.dots span')];
@@ -152,12 +159,13 @@ function render() {
 
 function finish() {
   try { localStorage.setItem('naiz-onboarded', '1'); } catch {}
+  saveLang();
   location.replace('/?skip');
 }
 
 next.addEventListener('click', () => { if (i < slides.length - 1) { i++; render(); } else finish(); });
 document.getElementById('skip').addEventListener('click', finish);
-document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; render(); });
+document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; saveLang(); render(); });
 
 // Swipe between slides on phones.
 let x0 = null;

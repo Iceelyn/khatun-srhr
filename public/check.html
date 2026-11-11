@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="mn">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Naiz · Нууц шалгалт</title>
+<title>Naiz · Нууц асуумж</title>
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -35,7 +35,7 @@
 const T = {
   mn: {
     anon: 'Нэргүй', eyebrow: 'Хариулт хадгалагдахгүй', title: 'Шинжилгээ өгөх хэрэгтэй юу?',
-    subtitle: '2 минутын нууц шалгалт. Нэр шаардахгүй, хариултыг хадгалахгүй.',
+    subtitle: '2 минутын нууц асуумж. Нэр шаардахгүй, хариултыг хадгалахгүй.',
     age: 'Таны нас', everSex: 'Та бэлгийн харьцаанд орж байсан уу?',
     yes: 'Тийм', no: 'Үгүй', notSure: 'Мэдэхгүй', prefer: 'Хэлэхийг хүсэхгүй байна',
     symptoms: 'Сүүлийн үед эдгээрийн аль нь илэрсэн бэ?',
@@ -59,6 +59,15 @@ const T = {
       routine: ['Шинжилгээ өгөх нь зүйтэй', 'Одоогоор яаралтай зүйл алга, гэхдээ товлон шинжилгээ өгөх нь таны эрүүл мэндийг хамгаална.'],
       none: ['Одоогоор шинжилгээ шаардлагагүй бололтой', 'Асуух зүйл гарвал бидэнд бичээрэй.'],
     },
+    noneOfThese: 'Аль нь ч илрээгүй', noSex: 'Бэлгийн хавьталд ороогүй',
+    whyTitle: 'Яагаад?',
+    why: {
+      today: 'Таны дурдсан шинж тэмдэг хурдан эмчлэх шаардлагатай байж болно. Эрт үзүүлбэл хүндрэлээс сэргийлж, эмчилгээ илүү амар болно.',
+      soon: 'Ялгадас өөрчлөгдөх, загатнах, шээхэд хорсох зэрэг нь ихэвчлэн эмчилгээгээр эдгэдэг халдвараас үүсдэг. Шалтгааныг нь зөвхөн шинжилгээ тогтоож чадна. Эмчлэхгүй орхивол удаан хугацааны өвдөлт, үргүйдэлд хүргэж болзошгүй.',
+      routine: 'Хламиди зэрэг олон халдвар ямар ч шинж тэмдэггүй явдаг. Шинэ хамтрагчтай болсон, бэлгэвчгүй харьцсан эсвэл удаан хугацаанд шинжилгээ өгөөгүй бол шинжилгээ өгөх нь өөрийгөө хамгаалах энгийн арга юм.',
+      none: 'Таны хариултаас одоогоор эрсдэл харагдсангүй. Шинэ хамтрагчтай болох эсвэл шинж тэмдэг илэрвэл асуумжийг дахин бөглөөрэй. 30–60 насандаа 3 жил тутамд умайн хүзүүний үнэгүй үзлэгт хамрагдаарай.',
+    },
+    reassure: 'Энэ жагсаалт танд эдгээр өвчин байна гэсэн үг биш. Эмч ихэвчлэн нэг удаагийн шинжилгээгээр хэд хэдэн халдварыг зэрэг шалгадаг.',
     testsTitle: 'Юу хүсэх вэ',
     tests: {
       swab: 'Арчдасны шинжилгээ: хламиди, заг хүйтэн, трихомониаз', blood: 'Цусны шинжилгээ: тэмбүү, ХДХВ', exam: 'Эмчийн үзлэг',
@@ -68,7 +77,7 @@ const T = {
     assaultMsg: 'Таны буруу биш. Аль болох хурдан эмнэлэгт эсвэл Нэг цэгийн үйлчилгээний төвд хандаарай. 72 цагийн дотор хандвал жирэмслэлт болон ХДХВ-ээс урьдчилан сэргийлэх боломжтой. Аюулд байгаа бол 102.',
     youth: '18-аас доош настай бол Өсвөр үеийнхэнд ээлтэй кабинетад үнэгүй, нууцлалтай зөвлөгөө авах боломжтой.',
     disclaimer: 'Энэ бол онош биш. Зөвхөн шинжилгээ л баттай хариу өгнө.',
-    stepCheck: 'Шалгалт', stepResult: 'Үр дүн', resultTitle: 'Таны үр дүн', back: '← Хариултаа засах', restart: 'Шалгалтыг дахин эхлэх',
+    stepCheck: 'Асуумж', stepResult: 'Үр дүн', resultTitle: 'Таны үр дүн', back: '← Хариултаа засах', restart: 'Асуумжийг дахин эхлэх',
     openChat: 'Нууц чат нээх →', nextTitle: 'Дараагийн алхам', step1: 'Эмчээс эдгээрийг хүсээрэй', step2: 'Хаана очих вэ', step3: 'Асуулт байна уу?',
     clinicsTitle: 'Хаана шинжилгээ өгөх вэ', website: 'Вэбсайт', callFirst: 'Очихоосоо өмнө утсаар цаг, үнээ лавлаарай. Үнэгүй төрийн үйлчилгээ эхэнд, дараа нь хувийн эмнэлгүүд.', free: 'Үнэгүй', partner: 'Хувийн эмнэлэг (төлбөртэй)', chat: 'Асуулт байна уу? Бидэнтэй чатлаарай',
   },
@@ -98,6 +107,15 @@ const T = {
       routine: ['A check is a good idea', 'Nothing urgent, but booking a test protects your health.'],
       none: ["You don't seem to need a test right now", 'Message us any time you have a question.'],
     },
+    noneOfThese: 'None of these', noSex: "I haven't had sex",
+    whyTitle: 'Why?',
+    why: {
+      today: 'The signs you described may need quick treatment. Seeing a doctor early prevents complications and makes treatment easier.',
+      soon: "Changes in discharge, itching or burning when peeing are usually caused by infections that treatment cures. Only a test can find the cause. Left untreated, some can lead to long-term pain or infertility.",
+      routine: "Many infections, such as chlamydia, cause no symptoms at all. If you've had a new partner, sex without a condom, or no test for a long time, a test is a simple way to protect yourself.",
+      none: "Your answers don't show a risk right now. If you have a new partner or notice symptoms, do the check again. Between ages 30 and 60, get free cervical screening every 3 years.",
+    },
+    reassure: "This list doesn't mean you have these infections. Doctors usually check for several at once with one test.",
     testsTitle: 'What to ask for',
     tests: {
       swab: 'Swab test: chlamydia, gonorrhoea, trichomoniasis', blood: 'Blood test: syphilis, HIV', exam: 'An exam by a doctor',
@@ -113,7 +131,14 @@ const T = {
   },
 };
 
-let lang = 'mn';
+// English first (for reviewers); ?lang=mn for links shared with our users. The choice is remembered.
+let lang = (() => {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'mn' || q === 'en') return q;
+  try { const saved = localStorage.getItem('naiz-lang'); if (saved === 'mn' || saved === 'en') return saved; } catch {}
+  return 'en';
+})();
+const saveLang = () => { try { localStorage.setItem('naiz-lang', lang); } catch {} };
 const form = document.getElementById('form');
 const el = (tag, props = {}, ...kids) => {
   const n = Object.assign(document.createElement(tag), props);
@@ -156,16 +181,34 @@ function renderForm() {
   form.replaceChildren(
     age,
     radioGroup('everSex', t.everSex, yn),
-    checkGroup('symptoms', t.symptoms, Object.entries(t.s)),
+    checkGroup('symptoms', t.symptoms, [...Object.entries(t.s), ['none', t.noneOfThese]]),
     checkGroup('now', t.now, [['fever', t.fever], ['severePain', t.severePain], ['heavyBleeding', t.heavyBleeding]]),
     radioGroup('maybePregnant', t.maybePregnant, [['yes', t.yes], ['no', t.no], ['notSure', t.notSure]]),
-    radioGroup('newPartnerNoCondom', t.newPartner, yn),
+    radioGroup('newPartnerNoCondom', t.newPartner, [['yes', t.yes], ['no', t.no], ['noSex', t.noSex], ['prefer', t.prefer]]),
     radioGroup('partnerHasSTI', t.partnerSTI, [['yes', t.yes], ['no', t.no], ['notSure', t.notSure]]),
     radioGroup('lastSTITest', t.lastTest, [['never', t.never], ['over1y', t.over1y], ['within1y', t.within1y]]),
     screening,
     radioGroup('assault', t.assault, yn),
     el('button', { type: 'submit', className: 'primary', textContent: t.submit, style: 'width:100%;margin-bottom:16px' }),
   );
+
+  // "None of these" can't be ticked together with a symptom (W01: there was no answer for "no symptoms").
+  const sym = [...form.querySelectorAll('input[name=symptoms]')];
+  for (const box of sym) box.addEventListener('change', () => {
+    if (!box.checked) return;
+    for (const other of sym) if ((box.value === 'none') !== (other.value === 'none')) other.checked = false;
+  });
+
+  // Questions about sex only make sense if she has had sex (W05: no answer for "haven't had sex").
+  const sexOnly = ['maybePregnant', 'newPartnerNoCondom', 'partnerHasSTI'].map((n) => form.querySelector(`input[name=${n}]`).closest('fieldset'));
+  const syncSexQuestions = () => {
+    const never = form.querySelector('input[name=everSex][value=no]').checked;
+    for (const fs of sexOnly) {
+      fs.hidden = never;
+      if (never) fs.querySelectorAll('input').forEach((i) => { i.checked = false; });
+    }
+  };
+  form.querySelectorAll('input[name=everSex]').forEach((i) => i.addEventListener('change', syncSexQuestions));
 }
 
 function collect() {
@@ -175,7 +218,7 @@ function collect() {
   return {
     age: Number(v('age')),
     sexuallyActive: v('everSex') === 'yes',
-    symptoms: fd.getAll('symptoms'),
+    symptoms: fd.getAll('symptoms').filter((x) => x !== 'none'),
     fever: now.includes('fever'),
     severePain: now.includes('severePain'),
     heavyBleeding: now.includes('heavyBleeding'),
@@ -210,11 +253,13 @@ function showResult(r, { push = true } = {}) {
   document.getElementById('result-title').textContent = t.resultTitle;
   const box = el('div', { className: `alert big ${r.level}` }, el('h2', { textContent: head }), el('p', { textContent: r.special === 'assault' ? t.assaultMsg : body, style: 'margin:0' }));
   const parts = [box];
+  // W02, W06: the result was too short and didn't say why; the list of tests felt scary.
+  if (r.special !== 'assault') parts.push(el('div', { className: 'card why' }, el('h3', { textContent: t.whyTitle }), el('p', { textContent: t.why[r.level] })));
   if (r.youth) parts.push(el('div', { className: 'alert routine', textContent: t.youth }));
   parts.push(el('div', { className: 'section-title' }, el('h2', { textContent: t.nextTitle })));
   let n = 0;
   const step = (title, ...body) => el('div', { className: 'card next-step' }, el('span', { className: 'num', textContent: String(++n) }), el('div', {}, el('h3', { textContent: title }), ...body));
-  if (r.tests.length) parts.push(step(t.step1, el('ul', {}, ...r.tests.map((x) => el('li', { textContent: t.tests[x] || x })))));
+  if (r.tests.length) parts.push(step(t.step1, el('ul', {}, ...r.tests.map((x) => el('li', { textContent: t.tests[x] || x }))), el('p', { className: 'muted reassure', textContent: t.reassure })));
   parts.push(step(t.step2, el('p', {}, el('a', { className: 'link', href: '#clinics-title', textContent: t.clinicsTitle + ' ↓' }))));
   parts.push(step(t.step3, el('p', {}, el('a', { className: 'link', href: '/', textContent: t.openChat }))));
   parts.push(el('p', { className: 'muted', textContent: t.disclaimer }));
@@ -261,7 +306,7 @@ form.addEventListener('submit', async (e) => {
   showResult(await res.json());
 });
 document.getElementById('lang').addEventListener('click', () => {
-  lang = lang === 'mn' ? 'en' : 'mn';
+  lang = lang === 'mn' ? 'en' : 'mn'; saveLang();
   const answers = new FormData(form);
   renderForm();
   for (const [k, v] of answers) { // keep answers when switching language

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="mn">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,7 +26,7 @@ const T = {
     tasksTitle: 'Эхлээд эдгээр 3 даалгаврыг хийнэ үү',
     tasks: [
       ['Ичээд асууж чаддаггүй нэг асуултаа чатаас асуух', '/', 'Чат нээх'],
-      ['"Шинжилгээ өгөх хэрэгтэй юу?" шалгалтыг бөглөх (зохиомол хариулт байж болно)', '/check', 'Шалгалт нээх'],
+      ['"Шинжилгээ өгөх хэрэгтэй юу?" асуумжийг бөглөх (зохиомол хариулт байж болно)', '/check', 'Асуумж нээх'],
       ['Үнэгүй шинжилгээ өгөх газрыг олох', '/check#clinics', 'Эмнэлэг нээх'],
     ],
     who: 'Та хэн бэ?',
@@ -34,7 +34,7 @@ const T = {
     age: 'Нас (заавал биш)',
     ages: { '18-20': '18–20', '21-24': '21–24', '25-29': '25–29', '30+': '30+' },
     howWent: 'Даалгавар бүр хэр болсон бэ?',
-    taskNames: { task_chat: '1. Чатаас асуух', task_check: '2. Шалгалт бөглөх', task_clinic: '3. Үнэгүй эмнэлэг олох' },
+    taskNames: { task_chat: '1. Чатаас асуух', task_check: '2. Асуумж бөглөх', task_clinic: '3. Үнэгүй эмнэлэг олох' },
     results: { easy: 'Амархан', hard: 'Хэцүү ч хийсэн', failed: 'Чадсангүй', skipped: 'Оролдоогүй' },
     rateTitle: 'Санал нийлэх эсэх (1 = огт үгүй, 5 = бүрэн)',
     rates: {
@@ -93,7 +93,14 @@ const T = {
   },
 };
 
-let lang = 'mn';
+// English first (for reviewers); ?lang=mn for links shared with our users. The choice is remembered.
+let lang = (() => {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'mn' || q === 'en') return q;
+  try { const saved = localStorage.getItem('naiz-lang'); if (saved === 'mn' || saved === 'en') return saved; } catch {}
+  return 'en';
+})();
+const saveLang = () => { try { localStorage.setItem('naiz-lang', lang); } catch {} };
 const state = { role: '', age_group: '', task_chat: '', task_check: '', task_clinic: '', liked: '', confusing: '', change: '', consent: false };
 let sent = false;
 const app = document.getElementById('app');
@@ -184,7 +191,7 @@ function render() {
   app.append(form);
 }
 
-document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; render(); });
+document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; saveLang(); render(); });
 render();
 </script>
 <script src="/nav.js"></script>

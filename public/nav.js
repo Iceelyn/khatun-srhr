@@ -3,7 +3,7 @@
   const icon = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
   const TABS = [
     { href: '/', match: ['/', '/chat'], mn: 'Чат', en: 'Chat', icon: icon('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>') },
-    { href: '/check', match: ['/check'], mn: 'Шалгах', en: 'Check', icon: icon('<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 12l2 2 4-4"/>') },
+    { href: '/check', match: ['/check'], mn: 'Асуумж', en: 'Check', icon: icon('<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 12l2 2 4-4"/>') },
     { href: '/check#clinics', match: [], mn: 'Эмнэлэг', en: 'Clinics', icon: icon('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><path d="M12 7v5M9.5 9.5h5"/>') },
     { href: '/feedback', match: ['/feedback'], mn: 'Санал', en: 'Feedback', icon: icon('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>') },
   ];

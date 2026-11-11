@@ -1,7 +1,7 @@
 {
   "_readme": "The project site (docs/index.html) reads this file. Only put REAL results here, copied from research/03-findings.md. Leave a value as null and that line is hidden on the site; nothing is ever shown as a placeholder. status: done | in_progress | planned.",
-  "updated": "2026-11-03",
-  "app_url": "",
+  "updated": "2026-11-11",
+  "app_url": "https://khatun-srhr.onrender.com",
   "repo_url": "https://github.com/iceelyn/khatun-srhr",
   "methods": [
     {
@@ -13,23 +13,23 @@
     },
     {
       "id": "survey",
-      "status": "planned",
+      "status": "in_progress",
       "n": null,
-      "en": "Anonymous online survey of young women aged 18–29",
-      "mn": "18–29 насны залуу эмэгтэйчүүдийн нэргүй онлайн судалгаа",
+      "en": "Anonymous online survey of Mongolian women aged 18+ (built into Naiz, saved to the database)",
+      "mn": "18+ насны Монгол эмэгтэйчүүдийн нэргүй онлайн судалгаа (Naiz-д суурилуулсан, өгөгдлийн санд хадгалагдана)",
       "link": "research/02-protocol.md"
     },
     {
       "id": "interviews",
-      "status": "planned",
-      "n": null,
-      "en": "Semi-structured interviews with young women, health workers and parents",
-      "mn": "Залуу эмэгтэйчүүд, эрүүл мэндийн ажилтнууд, эцэг эхчүүдтэй хийсэн ярилцлага",
-      "link": "research/02-protocol.md"
+      "status": "done",
+      "n": 6,
+      "en": "In-depth interviews with 4 young women (22–27) and 2 health workers, each ending with a walkthrough of the live prototype",
+      "mn": "4 залуу эмэгтэй (22–27 нас), 2 эрүүл мэндийн ажилтантай хийсэн гүнзгий ярилцлага; ярилцлага бүрийн төгсгөлд ажиллаж буй прототипийг туршуулсан",
+      "link": "research/03-findings.md"
     },
     {
       "id": "usability",
-      "status": "planned",
+      "status": "in_progress",
       "n": null,
       "en": "Task-based usability test of the working prototype (3 core tasks, 1–5 ratings, comments triaged P0–P3)",
       "mn": "Ажиллаж буй прототипийн хэрэглээний тест (3 үндсэн даалгавар, 1–5 үнэлгээ, санал бүрийг P0–P3 гэж ангилсан)",
@@ -52,6 +52,36 @@
     }
   ],
   "metrics": [
+    {
+      "group": "interviews",
+      "value": "6",
+      "en": "In-depth interviews (4 young women, 2 health workers), each with a prototype walkthrough",
+      "mn": "Гүнзгий ярилцлага (4 залуу эмэгтэй, 2 эрүүл мэндийн ажилтан), бүгд прототипийг туршсан"
+    },
+    {
+      "group": "interviews",
+      "value": "4 / 6",
+      "en": "Raised fear of being seen or losing confidentiality as a reason they delay care",
+      "mn": "Бусдад харагдах, нууцлал алдагдахаас айдаг нь тусламж авахаа хойшлуулах шалтгаан гэж хэлсэн"
+    },
+    {
+      "group": "interviews",
+      "value": "4 / 6",
+      "en": "Described doctors who don't explain results, or low trust in clinics",
+      "mn": "Эмч үр дүнгээ тайлбарладаггүй, эмнэлэгт итгэх итгэл сул гэж хэлсэн"
+    },
+    {
+      "group": "interviews",
+      "value": "4 / 6",
+      "en": "Described the belief that you only need a gynecologist when sick or pregnant, or when you have symptoms",
+      "mn": "Зөвхөн өвчтэй, жирэмсэн эсвэл шинж тэмдэгтэй үед эмэгтэйчүүдийн эмчид очдог гэсэн ойлголтыг дурдсан"
+    },
+    {
+      "group": "interviews",
+      "value": "5",
+      "en": "Changes made to the prototype from interview feedback (v0.5)",
+      "mn": "Ярилцлагын саналаар прототипт хийсэн өөрчлөлт (v0.5)"
+    },
     {
       "group": "qa",
       "value": "30 / 30",
@@ -78,7 +108,7 @@
     },
     {
       "group": "qa",
-      "value": "24",
+      "value": "28",
       "en": "Automated tests run on every change, including all 30 test questions",
       "mn": "Өөрчлөлт бүр дээр ажилладаг автомат тест, үүнд 30 тест асуулт бүгд багтсан"
     },
@@ -149,7 +179,26 @@
       "mn": "Хоёр эмч хоёулаа аюулгүй гэж үнэлсэн хариулт"
     }
   ],
-  "quotes": [],
+  "quotes": [
+    {
+      "en": "People generally think you only go to a gynecologist if you're either sick or pregnant.",
+      "mn": "Нэг бол өвчтэй, нэг бол жирэмсэн болвол л эмэгтэйчүүдийн эмчид очдог гэсэн ойлголт ерөнхийдөө хүмүүсийн дунд байгаад байдаг.",
+      "who_en": "Young woman, 20s",
+      "who_mn": "Залуу эмэгтэй, 20-иод настай"
+    },
+    {
+      "en": "I feel very ashamed walking into the national communicable disease centre. The moment I walk in, I feel the discrimination in the way people look at me.",
+      "mn": "ХСҮТ-лүү орхоосоо их ичнэ. Орход шууд л харцнаас нь ялгаварлан гадуурхалт мэдэрдэг.",
+      "who_en": "Health worker, 20s",
+      "who_mn": "Эрүүл мэндийн ажилтан, 20-иод настай"
+    },
+    {
+      "en": "Seeing a gynecologist should be understood as just as normal as seeing a dentist.",
+      "mn": "Эмэгтэйчүүдийн эмчид үзүүлэх нь шүдний эмчид үзүүлэхтэй адил энгийн, хэвийн эрүүл мэндийн тусламж гэж ойлгуулах нь чухал.",
+      "who_en": "Young woman, 20s",
+      "who_mn": "Залуу эмэгтэй, 20-иод настай"
+    }
+  ],
   "iterations": [
     {
       "version": "v0.1",
@@ -174,6 +223,12 @@
       "date": "2026-11",
       "en": "Built-in anonymous survey saved to the database. Check result moved to its own screen with numbered next steps. Home page redesigned around our main goal, the 2-minute check: it is now the first and largest action, every chat answer ends with a link to it, and it is highlighted in the tab bar. The chat got a clear 'Naiz AI' identity. Clinic list filled with real public services (ХӨСҮТ first) and private clinics.",
       "mn": "Өгөгдлийн санд хадгалагддаг нэргүй судалгаа нэмэв. Шалгалтын үр дүнг дугаарласан дараагийн алхамтай тусдаа дэлгэц болгов. Нүүр хуудсыг гол зорилго болох 2 минутын шалгалтад төвлөрүүлэн шинэчлэв: хамгийн эхэнд, хамгийн том товч болж, чатын хариулт бүрийн төгсгөлд шалгалт руу холбоос гарч, доод цэсэнд онцлогдсон. Чатад 'Naiz AI' туслахын тодорхой дүр өгөв. Эмнэлгийн жагсаалтад төрийн үйлчилгээ (ХӨСҮТ эхэнд) болон хувийн эмнэлгүүдийг нэмэв."
+    },
+    {
+      "version": "v0.5",
+      "date": "2026-11",
+      "en": "Changes from 6 user interviews: added 'None of these' for symptoms (W01); added 'I haven't had sex' and hid questions about sex for women who haven't had sex (W05); every result now explains why (W02, W06); added a line that the list of tests doesn't mean you have these infections (W06); Mongolian wording changed from 'шалгалт' to the more neutral 'асуумж' (W01, W08). English shown first for reviewers.",
+      "mn": "6 ярилцлагын саналаар хийсэн өөрчлөлт: шинж тэмдэгт 'Аль нь ч илрээгүй' нэмэв (W01); 'Бэлгийн хавьталд ороогүй' хариулт нэмж, бэлгийн хавьталд ороогүй хүнд холбогдох асуултуудыг нуув (W05); үр дүн бүрт 'Яагаад?' тайлбар нэмэв (W02, W06); шинжилгээний жагсаалт нь танд эдгээр өвчин байна гэсэн үг биш гэдгийг нэмэв (W06); 'шалгалт' гэдгийг илүү төвийг сахисан 'асуумж' болгов (W01, W08)."
     }
   ],
   "team": [],

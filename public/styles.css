@@ -164,6 +164,10 @@ button.back { min-height: 36px; padding: 4px 0; font-size: 14px; color: var(--pr
 .next-step h3 { margin: 4px 0 6px; font-size: 16px; }
 .next-step ul, .next-step p { margin: 0; padding-left: 18px; }
 .next-step p { padding-left: 0; }
+.next-step p.reassure { margin-top: 10px; font-size: 13px; }
+.card.why { padding: 16px 18px; }
+.card.why h3 { margin: 0 0 6px; font-size: 16px; }
+.card.why p { margin: 0; }
 
 /* ---- chat ---- */
 .chat { display: flex; flex-direction: column; gap: 12px; padding-bottom: 110px; }

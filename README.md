@@ -60,7 +60,7 @@ No external packages. Node.js 20+ only.
 
 ```bash
 cp .env.example .env    # add your keys (or leave the AI key empty)
-npm test                # 24 tests: knowledge base, all 30 eval questions, safety, triage, rate limits, Messenger, feedback, survey
+npm test                # 28 tests: knowledge base, all 30 eval questions, safety, triage, rate limits, Messenger, feedback, survey
 npm start               # http://localhost:3000 (chat; first visit shows /welcome), /check, /feedback, /results
 ```
 

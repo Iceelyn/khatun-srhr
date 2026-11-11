@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="mn">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="/styles.css">
 <script>
 // First visit: show the 3-step welcome. Stored only in this browser.
-try { if (!localStorage.getItem('naiz-onboarded') && !location.search.includes('skip')) location.replace('/welcome'); } catch {}
+try { if (!localStorage.getItem('naiz-onboarded') && !location.search.includes('skip')) location.replace('/welcome' + location.search); } catch {}
 </script>
 </head>
 <body>
@@ -28,7 +28,7 @@ try { if (!localStorage.getItem('naiz-onboarded') && !location.search.includes('
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span data-t="t2">Нэргүй</span></li>
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span data-t="t3">Хадгалахгүй</span></li>
     </ul>
-    <a class="btn primary cta-btn" href="/check"><span data-t="ctaBtn">Шалгалт эхлэх</span> <span aria-hidden="true">→</span></a>
+    <a class="btn primary cta-btn" href="/check"><span data-t="ctaBtn">Эхлүүлэх</span> <span aria-hidden="true">→</span></a>
   </section>
 
   <div class="features two">
@@ -74,13 +74,13 @@ const T = {
   mn: {
     anon: 'Нэргүй', ctaEyebrow: 'Эндээс эхлээрэй', ctaTitle: 'Шинжилгээ өгөх хэрэгтэй юу?',
     ctaSub: 'Хэдэн асуултад хариулаад ямар шинжилгээ, хэр яаралтай хэрэгтэйг мэдээрэй. Эмч нарын тогтоосон дүрмээр.',
-    t1: '2 минут', t2: 'Нэргүй', t3: 'Хадгалахгүй', ctaBtn: 'Шалгалт эхлэх',
+    t1: '2 минут', t2: 'Нэргүй', t3: 'Хадгалахгүй', ctaBtn: 'Эхлүүлэх',
     aiName: 'Naiz AI туслах', aiSub: 'Эмчийн хянасан мэдээллээр хариулна · Нэргүй',
     greet: 'Сайн уу! Ичмээр санагдах асуултаа ч надаас асууж болно. Чамайг хэн болохыг би мэдэхгүй.',
-    nudge: 'Санаа зовж байна уу? 2 минутын шалгалтаар дараагийн алхмаа мэдээрэй.', nudgeBtn: 'Шалгалт өгөх →',
+    nudge: 'Санаа зовж байна уу? 2 минутын асуумжаар дараагийн алхмаа мэдээрэй.', nudgeBtn: 'Асуумж бөглөх →',
     fClinics: 'Үнэгүй эмнэлэг', fFeedback: 'Санал өгөх',
     intro: 'БЗДХ, сарын тэмдэг, жирэмслэлтээс хамгаалах, харилцаа. Хариулт бүрийг эмч хянадаг. Таны нэрийг асуухгүй.',
-    checkLink: 'Шинжилгээ өгөх хэрэгтэй юу? 2 минутын шалгалт', label: 'Таны асуулт', send: 'Илгээх',
+    checkLink: 'Шинжилгээ өгөх хэрэгтэй юу? 2 минутын асуумж', label: 'Таны асуулт', send: 'Илгээх',
     placeholder: 'Naiz AI-аас асуух…', helpful: 'Тустай байлаа', notHelpful: 'Тус болсонгүй', thanks: 'Баярлалаа!',
     thinking: '…', error: 'Алдаа гарлаа. Дахин оролдоно уу.',
     chips: ['Шинж тэмдэггүй ч халдвар байж болох уу?', 'Эцэг эх маань мэдэх үү?', 'ХПВ гэж юу вэ?', 'Тэмбүү эдгэрдэг үү?'],
@@ -100,7 +100,14 @@ const T = {
     chips: ['Can I have an STI without symptoms?', 'Will my parents find out?', 'What is HPV?', 'Can syphilis be cured?'],
   },
 };
-let lang = 'mn';
+// English first (for reviewers); ?lang=mn for links shared with our users. The choice is remembered.
+let lang = (() => {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'mn' || q === 'en') return q;
+  try { const saved = localStorage.getItem('naiz-lang'); if (saved === 'mn' || saved === 'en') return saved; } catch {}
+  return 'en';
+})();
+const saveLang = () => { try { localStorage.setItem('naiz-lang', lang); } catch {} };
 const chat = document.getElementById('chat');
 const q = document.getElementById('q');
 
@@ -177,7 +184,7 @@ async function ask(text) {
 
 document.getElementById('ask').addEventListener('submit', (e) => { e.preventDefault(); ask(q.value); });
 q.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(q.value); } });
-document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; render(); });
+document.getElementById('lang').addEventListener('click', () => { lang = lang === 'mn' ? 'en' : 'mn'; saveLang(); render(); });
 render();
 </script>
 <script src="/nav.js"></script>

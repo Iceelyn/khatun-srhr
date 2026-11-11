@@ -1,68 +1,76 @@
 # Research findings (anonymised)
 
-> Fill this in with real results only. Every number must come from data you collected.
-> If a sample is small, say so: reviewers trust honest small numbers far more than big round ones.
-> Delete this note before publishing.
+**Dates:** October–November 2026
+**Methods:** semi-structured interviews with a prototype walkthrough, anonymous online survey, internal QA. Protocol: [`02-protocol.md`](02-protocol.md). Internal QA: [`04-internal-qa.md`](04-internal-qa.md).
+**Participants:** adults only (interviewees aged 22–27). No names or identifying details are recorded here. Raw notes stay in the team's private drive, never in this repository.
 
-**Dates:** [start] to [end] 2026
-**Methods:** anonymous online survey, semi-structured interviews, prototype usability test, doctor grading of AI answers. Full protocol: `02-protocol.md`.
-**Participants:** adults aged 18–29 only. No names or identifying details were recorded.
+## 1. Problem validation survey
 
-## 1. Problem validation (survey, n = [N])
-
-Full counts: [`survey-summary.md`](survey-summary.md) (made with `npm run survey`).
+> **To be completed from the real export.** The survey runs at `/survey` and answers are stored in Supabase. Download them from `/results` > Survey > "Export survey CSV" and fill in this table with real counts ("X of N").
 
 | Question | Result |
 | --- | --- |
-| Never visited a gynecologist | [X]% |
-| Had a health worry they didn't get checked | [X]% |
-| Top reason for not going | [reason], [X]% |
-| Get sexual health information from social media | [X]% |
-| Have heard of HPV | [X]% |
-| Would use an anonymous, doctor-reviewed chat (4–5 out of 5) | [X]% |
+| Respondents | [N] |
+| Have never seen a gynecologist | [X of N] |
+| Had a sexual health problem but didn't see a doctor | [X of N] |
+| Most common reason for never going | [reason, X of those who never went] |
+| Feel worried, embarrassed or afraid about sexual health topics | [X of N] |
+| Know of chlamydia / HPV | [X of N] / [X of N] |
+| Would like anonymous advice from a doctor by chat (4–5 out of 5) | [X of N] |
 
-## 2. Interviews ([N] young women, [N] health workers, [N] parents)
+## 2. Interviews (n = 6)
 
-Logged anonymously on the team results page (codes W01, H01, P01…). Themes below are grouped from those notes.
+**Who:** 6 in-depth interviews: 4 young women (aged 22–27) and 2 health workers (aged 25–26, who also spoke from their own experience as patients). 5 were online and 1 in person, run by 3 interviewers with a shared script. Each interview ended with the person trying the live prototype and giving feedback.
+**Codes:** W01, W02, W05, W06, W07, W08. W03 and W04 are scheduled.
 
-**Theme 1: [name]**
-[2–3 sentences.] "[Short anonymous quote]" (woman, 20s)
+### Themes (and how many interviews raised each)
 
-**Theme 2: [name]**
-[2–3 sentences.] "[Quote]"
+**1. Fear of being seen and losing confidentiality (4 of 6)**
+Several had a bad first experience with no privacy: one was asked about her sex life by the doctor in front of her mother, at her first visit as a teenager (W01). In a small aimag, one avoided the hospital for fear of meeting people she knew, and got an injection from a nurse she knew instead (W05). Peers at public clinics and the feeling of being judged at the national communicable disease centre keep people away (W06, W08).
+> "I feel very ashamed walking into the national communicable disease centre. The moment I walk in, I feel the discrimination in the way people look at me." (health worker, 20s)
 
-**Theme 3: [name]**
-[2–3 sentences.] "[Quote]" (health worker)
+**2. Doctors who don't explain, and low trust in clinics (4 of 6)**
+Results are given without explanation and staff are cold (W02). One felt treated as "a money machine": told to take every test, with no clear answers to her questions (W06). Doubts about hygiene and reliability make women wary of choosing a clinic (W01). Women want a female doctor who is gentle and listens without judging (W02, W08).
+> "I don't know whether a place is trustworthy and meets hygiene standards, so it's hard. It's a very important organ, so I'm careful." (young woman, 20s)
 
-## 3. Prototype test (n = [N])
+**3. "Only go if you're sick or pregnant": low sense of personal risk (4 of 6)**
+Check-ups are linked to having symptoms or being sexually active; "no symptoms means I'm fine" is common (W01, W02, W06, W07). Women know the names of common STIs but not their symptoms (W02), and self-rated knowledge can be higher than actual knowledge (W01).
+> "People generally think you only go to a gynecologist if you're either sick or pregnant." (young woman, 20s)
 
-Testers used the live prototype, then filled in `/feedback`. Paste the table from /results > Overview > "Copy into 03-findings.md".
+**4. Not knowing what, where or when (4 of 6)**
+Which tests to ask for, how to prepare, which point of the cycle to go, which doctor, and where to book are all unclear (W02, W05, W08). Normal changes can be mistaken for an STI, causing needless distress (W06).
 
-| Measure | Result |
-| --- | --- |
-| Found it easy to use (4–5 out of 5) | [X]% |
-| Felt private (4–5 out of 5) | [X]% |
-| Trusted the answers (4–5 out of 5) | [X]% |
-| Would book a test after using it (4–5 out of 5) | [X]% |
-| Completed "ask the chat" / "do the check" / "find a free clinic" | [X of N] / [X of N] / [X of N] |
-| Questions asked during testing | [N] (top topics: [from /results]) |
-| Parents more willing to vaccinate after the parents screen | [X] of [N] |
+**5. Friends decide first (3 of 6)**
+The first step is asking one or two close friends; their opinion decides whether she sees a doctor at all (W01, W05, W06).
 
-## 4. AI answer quality (doctor grading)
+**6. Cost and time (4 of 6)**
+Private gynecologists are expensive and public clinics have long queues (W06); cost delays care (W01); prices aren't clear in advance (W08); a visit can take 2–3 days (W07).
 
-[N] test questions in Mongolian, Latin-script Mongolian and English. Rated accurate by both doctors: [X]%. Rated safe by both doctors: [X]%. Red-flag messages routed correctly: [X] of [N].
+**Common misconceptions heard (reported by interviewees):** you can't get pregnant the first time; you can catch an STI from a public toilet; no STI can ever be cured; pull-out prevents pregnancy; no symptoms means no infection.
 
-## 5. Feedback triage and what we changed
+**What this means for Naiz:** confidentiality must be visible (no login, nothing saved); answers must explain *why*, not just *what*; the check must make the case for testing without symptoms; clinic information must be practical (free first, what to ask for, call ahead); a trusted, friend-like tone matters.
+> "Seeing a gynecologist should be understood as just as normal as seeing a dentist." (young woman, 20s)
 
-Every comment was triaged on /results by category, priority (P0 = blocks the core journey, P1 = major, P2 = minor, P3 = cosmetic) and MoSCoW.
+## 3. Prototype feedback from interviews (n = 6)
 
-| Issue (from testers) | How many raised it | Category | Priority | What we did | GitHub issue |
+All 6 interviewees tried the live prototype. What worked: easy to use, clear and well organised (W05, W08); the clinic list at the end was liked (W02); having AI made it easy (W07).
+
+| Issue raised | Raised by | Category | Priority | MoSCoW | What we changed (v0.5) |
 | --- | --- | --- | --- | --- | --- |
-| [e.g. couldn't find the clinic list] | [X of N] | usability | P0 | [change] | #[n] |
-| [issue] | [X of N] | [category] | [P1] | [change] | #[n] |
+| No answer for "I have no symptoms" | W01 | Usability | P1 | Must | Added "None of these"; it can't be ticked together with a symptom |
+| Condom question has no answer for people who haven't had sex | W05 | Usability | P1 | Must | Added "I haven't had sex"; questions about sex are hidden if she has never had sex |
+| Result too short; doesn't say why to see a doctor | W02, W06 | Usability | P1 | Must | Every result now has a "Why?" section |
+| The list of tests made her fear she had 4 diseases | W06 | Usability | P1 | Must | Added: "This list doesn't mean you have these infections. Doctors usually check for several at once." |
+| The word "шалгалт" (exam/test) felt unclear or off-putting | W01, W08 | Usability | P2 | Should | Mongolian wording changed to "асуумж" (questionnaire); start button "Эхлүүлэх" as W08 suggested |
+| Contraception information, including for teenagers | W05, W08 | Missing feature | P2 | Could | Backlog |
+| FAQ section; colour-coded sections | W08 | Enhancement | P3 | Could | Backlog |
+| Explain which test is for which infection and when symptoms appear | W06 | Enhancement | P2 | Should | Backlog, needs doctor-written content |
+| Follow-up after a visit and a way to ask the doctor again | W08 | Missing feature | P3 | Could | Backlog, part of the clinic pilot |
 
-Not done yet (Could / Won't for now): [list]
+## 4. AI answer quality
 
-## 6. Limitations
+Not yet graded by doctors. Internal QA (keyword mode): 30 of 30 test questions handled as expected after fixes, 27 of 30 before. See [`04-internal-qa.md`](04-internal-qa.md).
 
-[e.g. small, mostly urban university sample; one-day test; self-reported intentions, not actual clinic visits.] Next: a 6-month pilot measuring tests booked and completed.
+## 5. Limitations
+
+Small, mostly urban interview sample of women in their 20s; health workers spoke partly as patients. Prototype feedback is qualitative and came from people who knew they were testing. Intentions are self-reported; the pilot will measure tests booked and completed.
