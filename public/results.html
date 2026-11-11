@@ -343,6 +343,7 @@ function viewSurvey() {
   const notes = [];
   if (o.survey_live === false) notes.push('Survey answers can\'t be read from the database: ' + (o.survey_error || ''));
   if (o.survey_backup) notes.push(`${o.survey_backup} answer(s) are kept in a temporary backup on the server because the database refused them. They move into the database automatically once it works, but a server restart before then loses them.`);
+  if (o.survey_test_rows) notes.push(`${o.survey_test_rows} generated test row(s) (id starting with "synth-") are in the database. They are left out of every number here. Delete them in Supabase: Table Editor → survey_responses, or SQL: delete from survey_responses where id::text like 'synth-%';`);
   if ((o.survey_missing_columns || []).length) notes.push(`The database is missing these columns, so those answers were not saved: ${o.survey_missing_columns.join(', ')}.`);
   const problem = notes.length
     ? el('div', { className: 'alert today' }, notes.map((n) => el('p', { style: 'margin:0 0 6px', textContent: n })),

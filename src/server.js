@@ -148,7 +148,10 @@ async function surveySummary() {
     backup = await surveyBackup.list().catch(() => []);
     rows = await surveyDB.list().catch(() => rows);
   }
-  const all = [...rows, ...backup];
+  // Generated test rows (ids starting with "synth-") are never counted as real answers.
+  const isTest = (r) => String(r.id || '').startsWith('synth-');
+  const test_rows = [...rows, ...backup].filter(isTest).length;
+  const all = [...rows, ...backup].filter((r) => !isTest(r));
   const missing = [...(surveyDB.missingColumns || [])];
   return {
     survey: all.length ? summarizeSurveyResponses(all) : readSurveySummary(),
@@ -156,6 +159,7 @@ async function surveySummary() {
     survey_error,
     survey_backup: backup.length,
     survey_missing_columns: missing,
+    survey_test_rows: test_rows,
   };
 }
 

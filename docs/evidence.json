@@ -14,10 +14,10 @@
     {
       "id": "survey",
       "status": "in_progress",
-      "n": null,
-      "en": "Anonymous online survey of Mongolian women aged 18+ (built into Naiz, saved to the database)",
-      "mn": "18+ насны Монгол эмэгтэйчүүдийн нэргүй онлайн судалгаа (Naiz-д суурилуулсан, өгөгдлийн санд хадгалагдана)",
-      "link": "research/02-protocol.md"
+      "n": 25,
+      "en": "Anonymous online survey of women aged 18+, built into Naiz (3–10 Nov 2026; still open)",
+      "mn": "18+ насны эмэгтэйчүүдийн нэргүй онлайн судалгаа, Naiz-д суурилуулсан (2026.11.03–10; үргэлжилж байна)",
+      "link": "research/03-findings.md"
     },
     {
       "id": "interviews",
@@ -83,6 +83,36 @@
       "mn": "Ярилцлагын саналаар прототипт хийсэн өөрчлөлт (v0.5)"
     },
     {
+      "group": "survey",
+      "value": "24 / 25",
+      "en": "Survey respondents who get sexual health information from internet search, friends or social media; only 9 of 25 from a doctor",
+      "mn": "Бэлгийн эрүүл мэндийн мэдээллээ интернэт, найз нөхөд, сошиал медиагаас авдаг судалгааны оролцогч; эмчээс авдаг нь 25-аас 9"
+    },
+    {
+      "group": "survey",
+      "value": "0 / 25",
+      "en": "Fully trust the sexual health information they find (5 of 5)",
+      "mn": "Олж авсан мэдээлэлдээ бүрэн итгэдэг (5-аас 5)"
+    },
+    {
+      "group": "survey",
+      "value": "5 / 25",
+      "en": "Had a sexual health problem but didn't see a doctor (3 more preferred not to say). Top reasons: fear of being found out, shame, thinking it isn't serious",
+      "mn": "Бэлгийн эрүүл мэндийн асуудал гарсан ч эмчид үзүүлээгүй (өөр 3 нь хэлэхийг хүсээгүй). Гол шалтгаан: бусдад мэдэгдэхээс айх, ичих, ноцтой биш гэж бодох"
+    },
+    {
+      "group": "survey",
+      "value": "7 / 25",
+      "en": "Have never seen a gynecologist",
+      "mn": "Эмэгтэйчүүдийн эмчид хэзээ ч үзүүлж байгаагүй"
+    },
+    {
+      "group": "survey",
+      "value": "4 / 8",
+      "en": "Know of chlamydia, against 7 of 8 for HIV, syphilis and HPV (updated survey). Chlamydia is common and usually silent",
+      "mn": "Хламидийг мэддэг; ХДХВ, тэмбүү, ХПВ-г 8-аас 7 мэддэг (шинэчилсэн судалгаа). Хламиди түгээмэл бөгөөд ихэвчлэн шинж тэмдэггүй"
+    },
+    {
       "group": "qa",
       "value": "30 / 30",
       "en": "Test questions handled correctly after fixes (27 matched to the right answer, 2 crisis messages routed to the fixed emergency reply, 1 off-topic question declined); 27 / 30 before the fixes",
@@ -111,30 +141,6 @@
       "value": "28",
       "en": "Automated tests run on every change, including all 30 test questions",
       "mn": "Өөрчлөлт бүр дээр ажилладаг автомат тест, үүнд 30 тест асуулт бүгд багтсан"
-    },
-    {
-      "group": "survey",
-      "value": null,
-      "en": "Never visited a gynecologist",
-      "mn": "Эмэгтэйчүүдийн эмчид хэзээ ч үзүүлж байгаагүй"
-    },
-    {
-      "group": "survey",
-      "value": null,
-      "en": "Had a health worry they didn't get checked",
-      "mn": "Шалгуулаагүй эрүүл мэндийн санаа зовнил байсан"
-    },
-    {
-      "group": "survey",
-      "value": null,
-      "en": "Top reason for not going",
-      "mn": "Эмнэлэгт очоогүй гол шалтгаан"
-    },
-    {
-      "group": "survey",
-      "value": null,
-      "en": "Would use an anonymous, doctor-reviewed chat (4–5 of 5)",
-      "mn": "Эмчийн хянасан нэргүй чатыг ашиглана (5-аас 4–5)"
     },
     {
       "group": "usability",

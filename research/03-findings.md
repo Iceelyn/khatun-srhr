@@ -4,19 +4,32 @@
 **Methods:** semi-structured interviews with a prototype walkthrough, anonymous online survey, internal QA. Protocol: [`02-protocol.md`](02-protocol.md). Internal QA: [`04-internal-qa.md`](04-internal-qa.md).
 **Participants:** adults only (interviewees aged 22–27). No names or identifying details are recorded here. Raw notes stay in the team's private drive, never in this repository.
 
-## 1. Problem validation survey
+## 1. Problem validation survey (n = 25)
 
-> **To be completed from the real export.** The survey runs at `/survey` and answers are stored in Supabase. Download them from `/results` > Survey > "Export survey CSV" and fill in this table with real counts ("X of N").
+**Who:** 25 anonymous responses collected with `/survey`, 3–10 November 2026. All 18+ (13 aged 18–20, 4 aged 21–24, 8 aged 25–29); 24 in Ulaanbaatar, 1 in an aimag centre. 17 answered the first version of the survey and 8 the updated one, so questions added later have n = 8. Counts are "X of those who answered". Small sample: read as an early signal, not as representative of young women in Mongolia.
 
-| Question | Result |
+| Finding | Result |
 | --- | --- |
-| Respondents | [N] |
-| Have never seen a gynecologist | [X of N] |
-| Had a sexual health problem but didn't see a doctor | [X of N] |
-| Most common reason for never going | [reason, X of those who never went] |
-| Feel worried, embarrassed or afraid about sexual health topics | [X of N] |
-| Know of chlamydia / HPV | [X of N] / [X of N] |
-| Would like anonymous advice from a doctor by chat (4–5 out of 5) | [X of N] |
+| Get sexual health information from informal sources (internet search, friends, social media) | **24 of 25** (search 17, friends 13, Facebook/TikTok/YouTube 9) |
+| Get it from a doctor | 9 of 25 |
+| Fully trust the information they get (5 of 5) | **0 of 25** (13 rated it 3 of 5) |
+| Have never seen a gynecologist | 7 of 25 |
+| Had a sexual health problem but didn't see a doctor | **5 of 25**, plus 3 who preferred not to say |
+| Why not (of those 5; tick all) | afraid someone would find out 2, embarrassed 2, didn't think it was serious 2, didn't know where to go 1, cost 1, bad past experience 1 |
+| Have heard of HPV | 18 of 25 (7 not sure or no) |
+| Know of chlamydia (updated version) | 4 of 8, against 7 of 8 for HIV, syphilis and HPV |
+| Feel worried about sexual health topics (updated version) | 5 of 8 |
+| Want anonymous advice by chat (4–5 of 5) | **7 of 24**, average 2.8. First wording ("anonymous chat reviewed by doctors"): 3 of 16. Updated wording ("advice from a medical professional"): 4 of 8 |
+
+**Written answers** about worries before a gynecology visit (updated version) included fear of having an infection, whether the doctor will be a woman or rough-handed, being afraid of the doctor, and that "people don't think of going to a gynecologist when a problem comes up; they try to treat it at home".
+
+**What this tells us**
+1. **Information comes from places women don't trust.** Almost everyone uses search, friends or social media; nobody fully trusts what they find. This supports doctor-approved answers.
+2. **Problems go unchecked, for the reasons interviews gave:** fear of being found out, shame, and thinking it isn't serious.
+3. **Chlamydia is the least known STI**, though it is common and usually silent. This supports a check that recommends testing without symptoms.
+4. **A chat alone isn't enough.** Interest in an anonymous chat was moderate. It was higher when the question said a medical professional answers, but that sample is very small. Together with the interviews (women want to know *what to do* and *where to go*), this is consistent with making the 2-minute check and the clinic list the main path, with the chat as support.
+
+**Data quality:** the export contained 84 additional generated test rows (IDs starting with `synth-`). They are excluded from every figure here and must be deleted from the database.
 
 ## 2. Interviews (n = 6)
 
